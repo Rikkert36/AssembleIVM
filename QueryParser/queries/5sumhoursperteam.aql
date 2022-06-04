@@ -1,0 +1,2 @@
+project fact, team, week, sum(hours) as hours 
+from(DC003_1);

@@ -1,0 +1,4 @@
+DC002_1 union DC002_2' union
+project fact, b.team, week, sum(hours) as hours
+from(DC002_2' carpro (Teamtotal) as b)
+;

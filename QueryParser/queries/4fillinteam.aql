@@ -1,0 +1,2 @@
+project employee, fact, team, week, hours
+from(DC001_2 natjoin R001);

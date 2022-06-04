@@ -1,0 +1,4 @@
+﻿a;b;c;d
+Rik;11;soep;8
+Rik;11;chips;10
+Rik;12;pie;5

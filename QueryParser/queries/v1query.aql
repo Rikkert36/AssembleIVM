@@ -1,0 +1,5 @@
+﻿(
+((dc001) as small natjoin dc002 natjoin dc003) 
+    thetajoin(employee <= (3*c.dal)/c.kasteel and (a.week > b.week or c != a)) 
+(project employee, week, (sum(hours)) as hours from(dc003) carpro dc004) 
+) as unioned;

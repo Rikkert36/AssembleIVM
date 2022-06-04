@@ -1,0 +1,3 @@
+DC007_1 union
+project employee, week.y as week, fact, sum(adjusted_hours) as adjusted_hours
+from(DC007_1);

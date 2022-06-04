@@ -1,0 +1,26 @@
+{"relations" : 
+    [
+        {"name":"DC001", "dimensions": ["fact", "employee", "week",  "hours"]},
+        {"name":"DC002", "dimensions": ["fact", "team", "week",  "hours"]},
+        {"name":"DC003", "dimensions": ["fact", "employee", "team",  "week",  "hours"]},
+        {"name":"DC004", "dimensions": ["fact", "team", "week",  "hours"]},
+        {"name":"DC005", "dimensions": ["employee", "week",  "hours"]},
+        {"name":"DC006", "dimensions": ["fact", "week",  "percentage"]},
+        {"name":"DC007", "dimensions": ["fact", "team", "week",  "adjusted hours"]},
+        {"name":"DC008", "dimensions": ["percentage fact", "team", "week",  "percentage"]},
+        {"name":"DC009", "dimensions": ["team", "week",  "count"]},
+        {"name":"DC010", "dimensions": ["employee", "week", "team", "value"]},
+        {"name":"DC011", "dimensions": ["team", "week",  "value"]},
+        {"name":"R001", "dimensions": ["employee", "week",  "team"]},
+        {"name":"Factgross", "dimensions": ["fact"]},
+        {"name":"Factnet", "dimensions": ["fact"]},
+        {"name":"Valuetrue", "dimensions": ["value"]},
+        {"name":"TeamDepartment", "dimensions": ["team", "department"]},
+        {"name":"Teamtotal", "dimensions": ["team"]},
+        {"name":"YearLength", "dimensions": ["year", "length"]},
+        {"name":"FactPercentagefacts", "dimensions": ["fact", "percentage_fact"]},
+        {"name":"DC002YearLength", "dimensions":["fact", "team", "week",  "hours", "length"]},
+        {"name": "TeamWeekCombos", "dimensions": ["team", "week"]}
+
+    ]
+}

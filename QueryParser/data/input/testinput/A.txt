@@ -1,0 +1,5 @@
+﻿a;b;c;d
+Rik;11;ga;40
+Rik;11;hol;10
+Rik;12;ga;40
+Rik;12;hol;10

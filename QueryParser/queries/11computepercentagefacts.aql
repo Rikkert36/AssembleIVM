@@ -1,0 +1,6 @@
+project percentage_fact, a.team, a.week, (a.hours/b.hours) * 100 as percentage 
+from(
+    (DC004_1 natjoin FactPercentagefacts) as a
+    thetajoin(a.team == b.team and a.week == b.week)
+    (select fact == "gross availability" from(DC004_1)) as b
+);

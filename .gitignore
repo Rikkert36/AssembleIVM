@@ -1,0 +1,7 @@
+QueryParser/data/*
+!QueryParser/data/input
+
+*/bin/*
+*/obj/*
+.vs
+.vscode

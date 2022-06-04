@@ -1,0 +1,3 @@
+DC001_0 union
+project employee, fact, week, gross_availability as hours
+from (DC005 carpro Factgross);

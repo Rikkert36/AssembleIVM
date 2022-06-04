@@ -1,0 +1,3 @@
+project fact, department as team, week, sum(hours) as hours
+from(DC002_1 natjoin TeamDepartment)
+;

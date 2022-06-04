@@ -1,0 +1,2 @@
+project team, week, count(employee) as count 
+from(DC010);

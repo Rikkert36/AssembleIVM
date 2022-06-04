@@ -1,0 +1,22 @@
+﻿DC001_1 union
+project a.employee, d.fact, a.week, a.hours - b.hours - c.hours as hours
+from(
+		(
+			select fact == "gross availability" 
+			from(DC001_1)
+		) as a 
+		thetajoin(
+			a.employee == b.employee and a.week == b.week 
+		)
+		(
+			select fact == "holiday" from(DC001_1)
+		) as b 
+		thetajoin(
+			b.employee == c.employee and b.week == c.week 
+		)
+		(
+			select fact == "education" from(DC001_1)
+		) as c
+		carpro
+		(Factnet) as d
+	);

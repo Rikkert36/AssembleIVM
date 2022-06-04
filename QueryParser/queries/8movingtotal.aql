@@ -1,0 +1,13 @@
+project a.fact, a.team, a.week, sum(b.hours) as hours 
+from(
+    (DC002) as a
+    thetajoin(
+        a.fact == b.fact and a.team == b.team and (
+            (a.week.y == b.week.y and a.week.w - b.week.w >= 0 and a.week.w - b.week.w < 5) or 
+            (a.week.y == b.week.y + 1 and a.week.w + b.length - b.week.w >= 0 
+            and a.week.w + b.length - b.week.w < 5)
+        )
+    )
+    (project fact, week, hours, length 
+    from (DC002_2 thetajoin(DC002_2.week.y == YearLength.year) YearLength)) as b
+);
