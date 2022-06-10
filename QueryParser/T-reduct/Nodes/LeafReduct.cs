@@ -1,5 +1,6 @@
 ﻿using AssembleIVM.T_reduct;
 using QueryParser.GJTComputerFiles.ConstructorStructures;
+using AssembleIVM.T_reduct.Enumerators;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,9 +11,13 @@ namespace AssembleIVM {
     class LeafReduct : NodeReduct {
         public string dataset;
 
-        public LeafReduct(string name, string[] variables, string dataset):
-            base(name, variables) {
+        public LeafReduct(string name, List<string> variables, string dataset, Enumerator enumerator, bool inFrontier) :
+            base(name, variables, enumerator, inFrontier) {
             this.dataset = dataset;
+        }
+
+        public override List<string> RetrieveHeader() {
+            return variables;
         }
 
         protected override void RemoveTuple(GMRTuple tuple) {

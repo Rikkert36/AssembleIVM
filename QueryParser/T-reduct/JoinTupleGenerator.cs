@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 
 namespace AssembleIVM.T_reduct {
-    class RangeTupleList {
+    class JoinTupleGenerator {
 
         public List<string> eqJoinHeader;
         public List<string[]> eqJoinTuples;
@@ -17,7 +17,7 @@ namespace AssembleIVM.T_reduct {
         public List<string> orderHeader;
         public List<Bound[][]> rangeValueTuples;
 
-        public RangeTupleList(List<string> eqJoinHeader, List<string> orderHeader, List<string> rightTupleHeader,
+        public JoinTupleGenerator(List<string> eqJoinHeader, List<string> orderHeader, List<string> rightTupleHeader,
             GMRTuple rightTuple, TreeNode predicate) {
             this.eqJoinHeader = eqJoinHeader;
             this.orderHeader = orderHeader;

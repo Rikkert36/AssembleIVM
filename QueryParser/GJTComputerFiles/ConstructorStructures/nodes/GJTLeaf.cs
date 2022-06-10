@@ -1,6 +1,7 @@
 ﻿using AssembleIVM;
 using AssembleIVM.GJTs;
 using AssembleIVM.T_reduct;
+using AssembleIVM.T_reduct.Enumerators;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +9,7 @@ using System.Text;
 namespace QueryParser.GJTComputerFiles.ConstructorStructures {
     class GJTLeaf : GJTNode {
         public string dataset;
-        public GJTLeaf(string name, string[] variables, string dataset): base(name, variables) {
+        public GJTLeaf(string name, List<string> variables, string dataset, Enumerator enumerator) : base(name, variables, enumerator) {
             this.dataset = dataset;
         }
 
@@ -19,8 +20,8 @@ namespace QueryParser.GJTComputerFiles.ConstructorStructures {
         }*/
 
         public override NodeReduct GenerateReduct(string modelName) {
-            LeafReduct result = new LeafReduct(this.name, this.variables, this.dataset);
-            result.inFrontier = this.inFrontier;
+            LeafReduct result = new LeafReduct(this.name, this.variables, this.dataset, this.enumerator, this.inFrontier);
+            if (enumerator != null) enumerator.rho = result;
             return result;
         }
     }

@@ -1,2 +1,2 @@
 Fact
-Net availability
+net availability

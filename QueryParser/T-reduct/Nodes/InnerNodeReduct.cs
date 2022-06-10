@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using AssembleIVM.T_reduct.Enumerators;
 using System.Text;
 
 namespace AssembleIVM {
@@ -13,11 +14,14 @@ namespace AssembleIVM {
         public List<NodeReduct> children;
         public List<TreeNode> predicates;
 
-        public InnerNodeReduct(string name, string[] variables,
-            List<NodeReduct> children, List<TreeNode> predicates) : base(name, variables) {
+        public InnerNodeReduct(string name, List<string> variables,
+            List<NodeReduct> children, List<TreeNode> predicates, Enumerator enumerator, bool inFrontier) :
+            base(name, variables, enumerator, inFrontier) {
             this.children = children;
             this.predicates = predicates;
         }
+
+        public abstract List<string> GetUnprojectHeader();
 
         public abstract void ComputeDelta(NodeReduct node);
 

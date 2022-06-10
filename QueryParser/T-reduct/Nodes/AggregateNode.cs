@@ -1,40 +1,30 @@
-﻿using QueryParser.NewParser.TreeNodes;
+﻿using AssembleIVM.T_reduct.Enumerators;
+using QueryParser.NewParser.TreeNodes;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace AssembleIVM.T_reduct.Nodes {
-    class AggregateNode : InnerNodeReduct {
-        public AggregateNode(string name, string[] variables, List<NodeReduct> children, List<TreeNode> predicates) : base(name, variables, children, predicates) {
+    class AggregateNode : UnaryNode {
+        string aggregateFunction;
+
+        public AggregateNode(string name, List<string> variables, List<NodeReduct> children, List<TreeNode> predicates, Enumerator enumerator, bool inFrontier, string aggregateFunction) :
+            base(name, variables, children, predicates, enumerator, inFrontier) {
+            this.aggregateFunction = aggregateFunction;
         }
 
         public override void ComputeDelta(NodeReduct node) {
-            delta.unprojectHeader = new List<string>(node.variables);
             foreach (GMRTuple tuple in node.delta.projectedAddedTuples) {
-                if (predicates[0] != null) {
-                    if (new PredicateTupleEvaluator().Evaluate(new List<string>(variables), tuple, predicates[0])) {
-                        string key = tuple.ToString();
-                        delta.unprojectedAddedTuples[key] = new Tuple<GMRTuple, int>(tuple, tuple.count);
-                    }
-                } else {
-                    string key = tuple.ToString();
-                    delta.unprojectedAddedTuples[key] = new Tuple<GMRTuple, int>(tuple, tuple.count);
-                }
+                delta.unprojectedAddedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count) { fields = tuple.fields });
             }
             foreach (GMRTuple tuple in node.delta.projectedRemovedTuples) {
-                string key = tuple.ToString();
-                delta.unprojectedRemovedTuples[key] = new Tuple<GMRTuple, int>(tuple, tuple.count);
+                delta.unprojectedRemovedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count) { fields = tuple.fields });
             }
         }
 
-        protected override void RemoveTuple(GMRTuple tuple) {
-            List<GMRTuple> section = index.Get(tuple.fields);
-            GMRTuple t = index.FindTuple(tuple, section);
-            t.count -= tuple.count;
-            if (t.count < 1) {
-                section.Remove(t);
-                if (section.Count == 0) index.RemoveKey(tuple.fields);
-            }
+        public override List<string> RetrieveHeader() {
+            string aggregateDimension = Utils.SetMinus(children[0].variables, variables)[0];
+            return Utils.Union(variables, new List<string> { $"{aggregateFunction}({aggregateDimension})" });
         }
     }
 }

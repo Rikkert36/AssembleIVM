@@ -22,14 +22,32 @@ namespace AssembleIVM.T_reduct {
             tupleMap.Remove(tupleString);
         }
 
-        public List<GMRTuple> Get(string[] tuple) {
+        private string GetKey(string[] tuple) {
             List<string> eqJoinVars = new List<string>();
-            foreach(string var in eqJoinHeader) {
-                eqJoinVars.Add(tuple[header.IndexOf(var)]);
+            foreach (string var in eqJoinHeader) {
+                if (tuple.Length == header.Count) {
+                    eqJoinVars.Add(tuple[header.IndexOf(var)]);
+                } else {
+                    eqJoinVars.Add(tuple[eqJoinHeader.IndexOf(var)]);
+                }
             }
-            string tupleString = TupleToString(eqJoinVars);
-            if (!tupleMap.ContainsKey(tupleString)) tupleMap[tupleString] = new List<GMRTuple>();
-            return tupleMap[tupleString];
+            return TupleToString(eqJoinVars);
+        }
+
+        public bool ContainsKey(string[] tuple) {
+            return tupleMap.ContainsKey(GetKey(tuple));
+        }
+
+        public List<GMRTuple> Get(string[] tuple) {
+            string key = GetKey(tuple);
+            if (!tupleMap.ContainsKey(key)) return new List<GMRTuple>();
+            return tupleMap[key];
+        }
+
+        public List<GMRTuple> GetOrPlace(string[] tuple) {
+            string key = GetKey(tuple);
+            if (!tupleMap.ContainsKey(key)) tupleMap[key] = new List<GMRTuple>();
+            return tupleMap[key];
         }
 
 
@@ -37,13 +55,13 @@ namespace AssembleIVM.T_reduct {
             if (predicate == null) {
                 return Get(rightTuple.fields);
             } else {
-                return new RangeTupleList(eqJoinHeader, orderHeader,rightHeader, rightTuple, predicate)
+                return new JoinTupleGenerator(eqJoinHeader, orderHeader,rightHeader, rightTuple, predicate)
                     .RetrieveCorrespondingTuples(this);
             }
         }
 
         public bool AnyJoin(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
-            return new RangeTupleList(eqJoinHeader, orderHeader, rightHeader, rightTuple, predicate).DoesJoin(this);
+            return new JoinTupleGenerator(eqJoinHeader, orderHeader, rightHeader, rightTuple, predicate).DoesJoin(this);
         }
 
         /*private Tuple<GMRTuple, bool> Contains(GMRTuple tuple) {

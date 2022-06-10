@@ -1,21 +1,28 @@
 ﻿using QueryParser.GJTComputerFiles;
+using QueryParser.NewParser.TreeNodes;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using AssembleIVM.T_reduct.Enumerators;
 using System.Text;
 
 namespace AssembleIVM.T_reduct {
     abstract class NodeReduct {
-        public readonly string[] variables;
-        public bool inFrontier = false;
+        public readonly List<string> variables;
+        public bool inFrontier;
         public string name;
         public Index index;
         public InnerNodeReduct parent;
 
         public Update delta;
+        private Enumerator enumerator;
 
-        public NodeReduct(string name, string[] variables) {
+        public NodeReduct(string name, List<string> variables, Enumerator enumerator, bool inFrontier) {
             this.variables = variables;
             this.name = name;
+            this.enumerator = enumerator;
+            this.inFrontier = inFrontier;
             this.index = new Index();
         }
 
@@ -27,13 +34,37 @@ namespace AssembleIVM.T_reduct {
             return result;
         }
 
+        public abstract List<string> RetrieveHeader();
+
         public void SetParent(InnerNodeReduct parent) {
             this.parent = parent;
         }
 
+        public List<GMRTuple> SemiJoin(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
+            return index.SemiJoin(rightHeader, rightTuple, predicate);
+        }
+
+        public bool AnyJoin(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
+            return index.AnyJoin(rightHeader, rightTuple, predicate);
+        }
+
+        public IEnumerable<List<string>> Enumerate(GMRTuple t) {
+            return enumerator.Enumerate(t);
+        }
+
+        public void Serialize(BinaryFormatter bf, FileStream fs) {
+            bf.Serialize(fs, index);
+        }
+
+        public void Deserialize(BinaryFormatter bf, FileStream fs) {
+            index = (Index)bf.Deserialize(fs);
+        }
+
+
         public void ComputeParentUpdate() {
             if (this.parent != null) {
-                if (parent.delta == null ) parent.delta = new Update();
+                if (parent.delta == null) parent.delta = 
+                        new Update() { unprojectHeader = parent.GetUnprojectHeader()};
                 parent.ComputeDelta(this);
             }
         }
@@ -53,7 +84,7 @@ namespace AssembleIVM.T_reduct {
         }
 
         public GMRTuple AddTuple(GMRTuple tuple) {
-            List<GMRTuple> section = index.Get(tuple.fields);
+            List<GMRTuple> section = index.GetOrPlace(tuple.fields);
             GMRTuple t = index.FindTuple(tuple, section);
             if (t != null) {
                 t.count += tuple.count;

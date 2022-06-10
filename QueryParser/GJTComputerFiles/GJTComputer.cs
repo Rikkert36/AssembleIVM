@@ -37,7 +37,7 @@ namespace QueryParser.GJTComputerFiles {
 
         private bool IsEmpty(HyperGraph hyperGraph) {
             return hyperGraph.hyperEdges.Count == 1 &&
-                hyperGraph.hyperEdges[0].variables.Length == 0 &&
+                hyperGraph.hyperEdges[0].variables.Count == 0 &&
                 hyperGraph.predicates.Count == 0;
         }
 

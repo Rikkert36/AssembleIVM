@@ -1,11 +1,14 @@
 ﻿using QueryParser.NewParser.TreeNodes;
 using System;
 using System.Collections.Generic;
+using AssembleIVM.T_reduct.Enumerators;
+
 using System.Text;
 
 namespace AssembleIVM.T_reduct {
-    class JoinNode : InnerNodeReduct {
-        public JoinNode(string name, string[] variables, List<NodeReduct> children, List<TreeNode> predicates) : base(name, variables, children, predicates) {
+    abstract class JoinNode : InnerNodeReduct {
+        public JoinNode(string name, List<string> variables, List<NodeReduct> children, List<TreeNode> predicates,
+            Enumerator enumerator, bool inFrontier) : base(name, variables, children, predicates, enumerator, inFrontier) {
         }
 
         public override void ComputeDelta(NodeReduct node) {
@@ -15,52 +18,51 @@ namespace AssembleIVM.T_reduct {
             if ((predicates[i] != null && predicates[i].GetType().Name.Equals("CartesianProduct")) ||
                 (predicates[o] != null && predicates[o].GetType().Name.Equals("CartesianProduct"))) {
                 if (predicates[i] == null) {
-                    delta.unprojectHeader = new List<string>(node.variables);
                     foreach (GMRTuple tuple in node.delta.projectedAddedTuples) {
-                        string key = tuple.ToString();
-                        delta.unprojectedAddedTuples[key] = new Tuple<GMRTuple, int>(tuple, tuple.count);
+                        delta.unprojectedAddedTuples.Add(tuple);
                     }
                     foreach (GMRTuple tuple in node.delta.projectedRemovedTuples) {
-                        string key = tuple.ToString();
-                        delta.unprojectedRemovedTuples[key] = new Tuple<GMRTuple, int>(tuple, tuple.count);
+                        delta.unprojectedRemovedTuples.Add(tuple);
                     }
-                }
+                } 
             } else if (predicates[i] == null) {
-                delta.unprojectHeader = new List<string>(node.variables);
                 foreach (GMRTuple tuple in node.delta.projectedAddedTuples) {
-                    List<GMRTuple> correspondingTuples = sibling.index
+                    List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[o]);
                     foreach (GMRTuple t in correspondingTuples) {
-                        string key = tuple.ToString() + t.ToString();
-                        delta.unprojectedAddedTuples[key] = new Tuple<GMRTuple, int>(tuple, tuple.count * t.count);
+                        delta.unprojectedAddedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count * t.count) { fields = tuple.fields});
                     }
                 }
                 foreach (GMRTuple tuple in node.delta.projectedRemovedTuples) {
-                    List<GMRTuple> correspondingTuples = sibling.index
+                    List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[o]);
                     foreach (GMRTuple t in correspondingTuples) {
-                        string key = tuple.ToString() + t.ToString();
-                        delta.unprojectedRemovedTuples[key] = new Tuple<GMRTuple, int>(tuple, tuple.count * t.count);
+                        delta.unprojectedRemovedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count * t.count) { fields = tuple.fields });
                     }
                 }
             } else {
-                delta.unprojectHeader = new List<string>(sibling.variables);
                 foreach (GMRTuple tuple in node.delta.projectedAddedTuples) {
-                    List<GMRTuple> correspondingTuples = sibling.index
+                    List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[i]);
                     foreach (GMRTuple t in correspondingTuples) {
-                        string key = t.ToString() + tuple.ToString();
-                        delta.unprojectedAddedTuples[key] = new Tuple<GMRTuple, int>(t, tuple.count * t.count);
+                        delta.unprojectedAddedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count * t.count) { fields = t.fields });
                     }
                 }
                 foreach (GMRTuple tuple in node.delta.projectedRemovedTuples) {
-                    List<GMRTuple> correspondingTuples = sibling.index
+                    List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[i]);
                     foreach (GMRTuple t in correspondingTuples) {
-                        string key = t.ToString() + tuple.ToString();
-                        delta.unprojectedRemovedTuples[key] = new Tuple<GMRTuple, int>(t, tuple.count * t.count);
+                        delta.unprojectedRemovedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count * t.count) { fields = t.fields });
                     }
                 }
+            }
+        }
+
+        public override List<string> GetUnprojectHeader() {
+            if (predicates[0] == null) {
+                return new List<string>(children[0].variables);
+            } else {
+                return new List<string>(children[1].variables);
             }
         }
 

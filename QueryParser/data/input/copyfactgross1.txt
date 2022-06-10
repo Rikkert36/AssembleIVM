@@ -1,4 +1,0 @@
-﻿Employee;Fact;Week;Hours
-Rik;gross availability;11;40
-Rik;holiday;11;0
-Rik;education;11;8

@@ -185,9 +185,9 @@ namespace QueryParser.GJTComputerFiles.ConstructorStructures {
             bool seen = false;
             foreach (GJTNode node in hyperEdges) {
                 if(seen) {
-                    if (Array.IndexOf(node.variables, var) >= 0) return true;
+                    if (node.variables.IndexOf(var) >= 0) return true;
                 } else {
-                    if (Array.IndexOf(node.variables, var) >= 0) seen = true;
+                    if (node.variables.IndexOf(var) >= 0) seen = true;
                 }
             }
             return false;

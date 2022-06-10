@@ -9,17 +9,17 @@ using System.Text;
 
 namespace AssembleIVM {
     static class Utils {
-        public static HashSet<GMRTuple> CSVToTupleSet(string fileLocation, string[] variables) {
+        public static HashSet<GMRTuple> CSVToTupleSet(string fileLocation, List<string> variables) {
             using (TextFieldParser parser = new TextFieldParser(fileLocation)) { 
                 HashSet<GMRTuple> resultTable = new HashSet<GMRTuple>();
                 parser.TextFieldType = FieldType.Delimited;
                 parser.SetDelimiters(";");
                 string[] header = parser.ReadFields();
                 List<int> headerIntMap = new List<int>();
-                if (header.Length != variables.Length) 
+                if (header.Length != variables.Count) 
                     throw new Exception($"File {fileLocation} does not have as many dimensionvalues as {variables}");
                 for (int i = 0; i < header.Length; i++) {
-                    for (int j = 0; j < variables.Length; j++) {
+                    for (int j = 0; j < variables.Count; j++) {
                         if (SimpleDimension(header[i]).Equals(SimpleDimension(variables[j]))) {
                             headerIntMap.Add(j);
                             break;
@@ -40,6 +40,30 @@ namespace AssembleIVM {
                 }
                 return resultTable;
             }
+        }
+
+        public static List<string> SetMinus(List<string> left, List<string> right) {
+            List<string> result = new List<string>();
+            foreach(string s in left) {
+                if(!right.Contains(s)) {
+                    result.Add(s);
+                }
+            }
+            return result;
+        }
+
+        public static List<string> Union(List<string> t1, List<string> t2) {
+            List<string> result = new List<string>();
+            foreach (string s in t1) result.Add(s);
+            foreach (string s in t2) result.Add(s);
+            return result;
+        }
+
+        public static List<string> Union(string[] t1, string[] t2) {
+            List<string> result = new List<string>();
+            foreach (string s in t1) result.Add(s);
+            foreach (string s in t2) result.Add(s);
+            return result;
         }
 
         private static string SimpleDimension(string s) {
@@ -65,8 +89,8 @@ namespace AssembleIVM {
             return result;
         }
 
-        public static int GetWeekIndex(string[] variables) {
-            for (int i = 0; i < variables.Length; i++) {
+        public static int GetWeekIndex(List<string> variables) {
+            for (int i = 0; i < variables.Count; i++) {
                 string var = variables[i];
                 string[] slices = var.Split(".");
                 if (Array.IndexOf(slices, "week") >= 0) return i;

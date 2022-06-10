@@ -12,22 +12,26 @@ using System.Collections.Generic;
 namespace QueryParser {
     class Program {
         static void Main(string[] args) {
-            ManualGJT mgjt = new Computenetavail2();
+            RunModel();
+            Console.WriteLine("done");
+        }
+
+        public static void RunModel() {
+            Dictionary<string, Update> datasetUpdates = new Dictionary<string, Update>();
+            List<ManualGJT> subModels = new List<ManualGJT> { 
+                new Copyfactgross1(),
+                new Computenetavail2()
+            };
+            foreach(ManualGJT sm in subModels) {
+                RunSubModel(sm, datasetUpdates);
+            }
+        }
+
+        public static void RunSubModel(ManualGJT mgjt, Dictionary<string, Update> datasetUpdates) {
             string name = mgjt.GetName();
             GeneralJoinTree gjt = mgjt.Construct();
-            Dictionary<string, Update> datasetUpdates = new Dictionary<string, Update>();
-            HashSet<GMRTuple> deletions = new HashSet<GMRTuple> {
-                new GMRTuple(4, 1) { fields = new string[]{ "Rik", "12", "ga", "40"} },
-                new GMRTuple(4, 1) { fields = new string[]{ "Rik", "12", "hol", "10"} }
-
-            };
-            /*datasetUpdates.Add("testinput/A", new Update {
-                projectedAddedTuples = new HashSet<GMRTuple>(),
-                projectedRemovedTuples = deletions
-            });*/
             ReductTree reduct = new ReductTree(gjt, name);
-            reduct.RunModel(datasetUpdates, false, false, false);
-            Console.WriteLine("done");
+            reduct.RunModel(datasetUpdates, false, false, true);
         }
     }
 }

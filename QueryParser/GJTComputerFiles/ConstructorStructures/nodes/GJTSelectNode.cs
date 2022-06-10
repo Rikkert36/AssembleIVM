@@ -1,4 +1,5 @@
 ﻿using AssembleIVM.T_reduct;
+using AssembleIVM.T_reduct.Enumerators;
 using AssembleIVM.T_reduct.Nodes;
 using QueryParser.GJTComputerFiles;
 using QueryParser.GJTComputerFiles.ConstructorStructures;
@@ -7,9 +8,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AssembleIVM.GJTComputerFiles.ConstructorStructures {
-    class GJTAggregateNode : GJTInnerNode {
-        public GJTAggregateNode(string name, string[] variables, List<GJTNode> children, List<TreeNode> predicates) : base(name, variables, children, predicates) {
+namespace AssembleIVM.GJTComputerFiles.ConstructorStructures.nodes {
+    class GJTSelectNode : GJTInnerNode {
+        public GJTSelectNode(string name, List<string> variables, List<GJTNode> children, List<TreeNode> predicates, Enumerator enumerator) : 
+            base(name, variables, children, predicates, enumerator) {
         }
 
         public override NodeReduct GenerateReduct(string modelName) {
@@ -18,14 +20,13 @@ namespace AssembleIVM.GJTComputerFiles.ConstructorStructures {
                 reductChildren.Add(child.GenerateReduct(modelName));
 
             }
-            AggregateNode result = new AggregateNode(this.name, this.variables, reductChildren, this.predicates);
+            SelectNode result = new SelectNode(this.name, this.variables, reductChildren, this.predicates, this.enumerator, this.inFrontier);
+            enumerator.rho = result;
             foreach (NodeReduct child in result.children) {
                 child.SetParent(result);
             }
             result.inFrontier = this.inFrontier;
             return result;
         }
-
     }
 }
-

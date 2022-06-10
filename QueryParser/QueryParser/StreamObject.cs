@@ -20,10 +20,11 @@ namespace QueryParser.NewParser {
             return ch;
         }
         public char Peek() {
+            if (pos >= input.Length) return ';';
             return input[pos];
         }
         public bool Eof() {
-            return Peek().Equals(";");
+            return Peek().Equals(';');
         }
         public void Croak(string msg) {
             throw new Exception(msg + " (" + line + ":" + col + ")");

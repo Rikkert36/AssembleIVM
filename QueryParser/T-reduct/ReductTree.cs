@@ -1,29 +1,42 @@
-﻿using AssembleIVM.QueryParser.TreeNodes.Terminals;
+﻿using AssembleIVM.QueryParser.TreeNodes.Predicates.AlgebraicExpressions;
+using AssembleIVM.QueryParser.TreeNodes.Terminals;
+using AssembleIVM.T_reduct.Enumerators;
 using QueryParser.GJTComputerFiles;
+using QueryParser.NewParser;
 using QueryParser.NewParser.TreeNodes;
 using QueryParser.NewParser.TreeNodes.Predicates;
 using QueryParser.NewParser.TreeNodes.Terminals;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 
 
 namespace AssembleIVM.T_reduct {
     class ReductTree {
-        public NodeReduct root;
+        public InnerNodeReduct root;
         public HashSet<NodeReduct> leafs;
         public string modelName;
+        public string unionData;
         List<HashSet<NodeReduct>> nodesPerLevel;
+        public RootEnumerator enumerator;
+        public List<string> outputHeader;
+        private List<string> outputVariables;
+
 
         public bool splitWeekAndYearValues;
 
         public ReductTree(GeneralJoinTree GJT, string modelName) {
             this.modelName = modelName;
+            this.unionData = GJT.unionData;
             this.splitWeekAndYearValues = GJT.splitWeekAndYearValues;
+            this.enumerator = GJT.enumerator;
             this.nodesPerLevel = new List<HashSet<NodeReduct>>();
-            this.root = GJT.root.GenerateReduct(modelName);
+            this.root = (InnerNodeReduct)GJT.root.GenerateReduct(modelName);
             this.leafs = new HashSet<NodeReduct>();
+            this.outputHeader = GJT.outputHeader;
+            this.outputVariables = GJT.outputVariables;
             SetDeltasAndLevels(root, 0);
         }
 
@@ -37,13 +50,89 @@ namespace AssembleIVM.T_reduct {
             }
             UpdateTree();
             if (saveTree) SaveIndices(root);
+            Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta;
+            List<GMRTuple> outputDataset;
+            if (!isUpdate) {
+                List<GMRTuple> result = Enumerate();
+                List<GMRTuple> unionData = LoadUnionData(datasetUpdates);
+                outputDataset = result.Union(unionData).ToList();
+                delta = new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(new HashSet<GMRTuple>(outputDataset), new HashSet<GMRTuple>());
+            } else {
+                delta = null;
+                outputDataset = null;
+            }
+            if (saveOutput) SaveOutput(outputDataset);
+            datasetUpdates.Add(modelName, new Update() { projectedAddedTuples = delta.Item1, projectedRemovedTuples = delta.Item2 });
+        }
+
+        private List<GMRTuple> Enumerate() {
+            return Enumerate(root, outputVariables).ToList();
+        }
+
+        private IEnumerable<GMRTuple> Enumerate(InnerNodeReduct root, List<string> headerVariables) {
+            List<string> combinedHeader = root.RetrieveHeader();
+            foreach (List<GMRTuple> tupleList in root.index.tupleMap.Values) {
+                foreach (GMRTuple t in tupleList) {
+                    foreach (List<string> s in root.Enumerate(t)) {
+                        yield return CreateTuple(headerVariables, combinedHeader, s);
+                    }
+                }
+            }
+        }
+
+        private GMRTuple CreateTuple(List<string> headerVariables, List<string> combinedHeader, List<string> variables) {
+            List<string> result = new List<string>();
+            foreach (string headerVariable in headerVariables) {
+                TreeNode t = new AlgebraicExpressionParser().Parse(new Tokenizer(new StreamObject(headerVariable)));
+                if (t.GetType().Name.Equals("DimensionName") ||
+                t.GetType().Name.Equals("RelationAttribute")) {
+                    result.Add(t.FindValue(combinedHeader, variables.ToArray()));
+                } else if (t.GetType().Name.Equals("Number")) {
+                    result.Add(t.FindValue(combinedHeader, variables.ToArray()));
+                } else {
+                    AlgebraicExpression algebraicExpression = (AlgebraicExpression)t;
+                    result.Add(Convert.ToString(algebraicExpression.Compute(combinedHeader, variables.ToArray()).value));
+                }
+            }
+            return new GMRTuple(result.Count, 1) {
+                fields = result.ToArray()
+            };
+        }
+
+        private List<int> GetIndices(List<string> headerVariables, List<string> combinedHeader) {
+            List<int> result = new List<int>();
+            foreach (string headerVariable in headerVariables) {
+                result.Add(combinedHeader.IndexOf(headerVariable));
+            }
+            return result;
+        }
+
+        private void SaveOutput(List<GMRTuple> outputDataset) {
+            string location = @$"C:\Users\rmaas\Documents\Graduation project\code\QueryParser\QueryParser\data\{modelName}";
+
+            if (!Directory.Exists(location)) Directory.CreateDirectory(location);
+            using (StreamWriter file = new StreamWriter(@$"{location}\output.txt", false)) {
+                file.Write(outputHeader[0]);
+                for(int i = 1; i < outputHeader.Count; i++) {
+                    file.Write($";{outputHeader[i]}");
+                }
+                file.WriteLine("");
+                foreach (GMRTuple tuple in outputDataset) {
+                    file.Write(tuple.fields[0]);
+                    for (int i = 1; i < outputHeader.Count; i++) {
+                        file.Write($";{tuple.fields[i]}");
+                    }
+                    file.WriteLine("");
+                }
+            };
+            
         }
 
         private void SaveIndices(NodeReduct nodeReduct) {
             string location = @$"C:\Users\rmaas\Documents\Graduation project\code\QueryParser\QueryParser\data\{modelName}";
             using (FileStream fs = new FileStream(@$"{location}\{nodeReduct.name}INDEX.dat", FileMode.Create)) {
                 BinaryFormatter bf = new BinaryFormatter();
-                bf.Serialize(fs, nodeReduct.index);
+                nodeReduct.Serialize(bf, fs);
             }
             if (!leafs.Contains(nodeReduct)) {
                 InnerNodeReduct n = (InnerNodeReduct)nodeReduct;
@@ -53,12 +142,22 @@ namespace AssembleIVM.T_reduct {
             }
         }
 
+        private List<GMRTuple> LoadUnionData(Dictionary<string, Update> datasetUpdates) {
+            if (unionData.Length == 0) return new List<GMRTuple>();
+            string location = @$"C:\Users\rmaas\Documents\Graduation project\code\QueryParser\QueryParser\data\input\";
+            if (datasetUpdates.ContainsKey(unionData)) {
+                return datasetUpdates[unionData].projectedAddedTuples.ToList();
+            } else {
+                return Utils.CSVToTupleSet(@$"{location}\{unionData}.txt", outputHeader).ToList();
+            }
+        }
+
 
         private void LoadIndices(NodeReduct nodeReduct) {
             string location = @$"C:\Users\rmaas\Documents\Graduation project\code\QueryParser\QueryParser\data\{modelName}";
             using (FileStream fs = new FileStream(@$"{location}\{nodeReduct.name}INDEX.dat", FileMode.Open)) {
                 BinaryFormatter bf = new BinaryFormatter();
-                nodeReduct.index = (Index)bf.Deserialize(fs);
+                nodeReduct.Deserialize(bf, fs);
             }
             if (!leafs.Contains(nodeReduct)) {
                 InnerNodeReduct n = (InnerNodeReduct)nodeReduct;
@@ -90,22 +189,22 @@ namespace AssembleIVM.T_reduct {
             foreach (LeafReduct leaf in leafs) {
                 if (datasetUpdates.ContainsKey(leaf.dataset)) {
                     leaf.delta = datasetUpdates[leaf.dataset];
-                } 
+                }
             }
         }
 
         private void UpdateTree() {
             for (int i = nodesPerLevel.Count - 1; i > -1; i--) {
                 HashSet<NodeReduct> nodes = nodesPerLevel[i];
-                foreach(NodeReduct node in nodes) {
+                foreach (NodeReduct node in nodes) {
                     if (node.delta != null && !node.GetType().Name.Equals("LeafReduct")) node.ProjectUpdate();
                 }
                 foreach (NodeReduct node in nodes) {
-                    if (node.delta != null) node.ApplyUpdate();
+                    if (node.delta != null) {
+                        node.ApplyUpdate();
+                        if (node.delta != null && node != root) node.ComputeParentUpdate();
+                    }
                 }
-                foreach (NodeReduct node in nodes) {
-                    if (node.delta != null && node != root) node.ComputeParentUpdate();
-                }        
             }
         }
 
@@ -135,7 +234,7 @@ namespace AssembleIVM.T_reduct {
             }
             if (nodeReduct == root) {
                 InnerNodeReduct r = (InnerNodeReduct)nodeReduct;
-                nodeReduct.index = RootIndex(r);              
+                nodeReduct.index = RootIndex(r);
             }
         }
 

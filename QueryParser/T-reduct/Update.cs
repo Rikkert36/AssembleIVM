@@ -6,45 +6,45 @@ using System.Text;
 namespace AssembleIVM.T_reduct {
     class Update {
         public List<string> unprojectHeader;
-        public Dictionary<string, Tuple<GMRTuple, int>> unprojectedAddedTuples; //for every join
-        public Dictionary<string, Tuple<GMRTuple, int>> unprojectedRemovedTuples;
+        public List<GMRTuple> unprojectedAddedTuples; //for every join
+        public List<GMRTuple> unprojectedRemovedTuples;
         public HashSet<GMRTuple> projectedAddedTuples;
         public HashSet<GMRTuple> projectedRemovedTuples;
         //public HashSet<GMRTuple> appliedAddedTuples;
         //public HashSet<GMRTuple> appliedRemovedTuples;
 
         public Update() {
-            unprojectedAddedTuples = new Dictionary<string, Tuple<GMRTuple, int>>();
-            unprojectedRemovedTuples = new Dictionary<string, Tuple<GMRTuple, int>>();
+            unprojectedAddedTuples = new List<GMRTuple>();
+            unprojectedRemovedTuples = new List<GMRTuple>();
         }
 
-        public void ProjectTuples(string[] projectHeader) {
+        public void ProjectTuples(List<string> projectHeader) {
             List<int> projectIndices = new List<int>();
-            foreach (string s in new List<string>(projectHeader)) {
+            foreach (string s in projectHeader) {
                 projectIndices.Add(unprojectHeader.IndexOf(s));
             }
             Dictionary<string, GMRTuple> addMap = new Dictionary<string, GMRTuple>();
-            foreach (Tuple<GMRTuple, int> tuple in unprojectedAddedTuples.Values) {
-                GMRTuple projectTuple = new GMRTuple(projectHeader.Length, tuple.Item2) { 
-                    fields = projectIndices.Select(index => tuple.Item1.fields[index]).ToArray()
+            foreach (GMRTuple tuple in unprojectedAddedTuples) {
+                GMRTuple projectTuple = new GMRTuple(projectHeader.Count, tuple.count) { 
+                    fields = projectIndices.Select(i => tuple.fields[i]).ToArray()
                 };
                 string key = projectTuple.ToString();
                 if (addMap.ContainsKey(key)) {
                     projectTuple = addMap[key];
-                    projectTuple.count += tuple.Item2;
+                    projectTuple.count += tuple.count;
                 } else {
                     addMap.Add(key, projectTuple);
                 }
             }
             Dictionary<string, GMRTuple> remMap = new Dictionary<string, GMRTuple>();
-            foreach (Tuple<GMRTuple, int> tuple in unprojectedRemovedTuples.Values) {
-                GMRTuple projectTuple = new GMRTuple(projectHeader.Length, tuple.Item2) {
-                    fields = projectIndices.Select(index => tuple.Item1.fields[index]).ToArray()
+            foreach (GMRTuple tuple in unprojectedRemovedTuples) {
+                GMRTuple projectTuple = new GMRTuple(projectHeader.Count, tuple.count) {
+                    fields = tuple.fields
                 };
                 string key = projectTuple.ToString();
                 if (remMap.ContainsKey(key)) {
                     projectTuple = remMap[key];
-                    projectTuple.count += tuple.Item2;
+                    projectTuple.count += tuple.count;
                 } else {
                     remMap.Add(key, projectTuple);
                 }

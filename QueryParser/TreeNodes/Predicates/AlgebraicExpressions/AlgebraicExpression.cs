@@ -40,8 +40,8 @@ namespace AssembleIVM.QueryParser.TreeNodes.Predicates.AlgebraicExpressions {
             } else if (child.GetType().Name.Equals("Number")) {
                 return new Number(child.GetString());
             } else {
-                AlgebraicExpression algebraicExpession = (AlgebraicExpression)child;
-                return algebraicExpession.Compute(header, values);
+                AlgebraicExpression algebraicExpression = (AlgebraicExpression)child;
+                return algebraicExpression.Compute(header, values);
             }
         }
        

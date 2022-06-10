@@ -1,4 +1,5 @@
-﻿using QueryParser.NewParser.Tokens;
+﻿using AssembleIVM.QueryParser.Tokens;
+using QueryParser.NewParser.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -90,7 +91,7 @@ namespace QueryParser.NewParser {
         public Token ReadNext() {
             ReadWhile(IsWS);
             char c = input.Peek();
-            if (input.Eof()) return null;
+            if (input.Eof()) return new EOFToken("");
             if (c.Equals('"')) return ReadString();
             if (IsDigit(c)) return ReadNumber();
             if (IsIdStart(c)) return ReadIDToken();
@@ -115,7 +116,7 @@ namespace QueryParser.NewParser {
             return token;
         }
         public bool Eof() {
-            return Peek() == null;
+            return Peek().Type.Equals("eof");
         }
     }
 }
