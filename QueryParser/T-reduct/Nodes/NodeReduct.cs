@@ -18,12 +18,12 @@ namespace AssembleIVM.T_reduct {
         public Update delta;
         private Enumerator enumerator;
 
-        public NodeReduct(string name, List<string> variables, Enumerator enumerator, bool inFrontier) {
+        public NodeReduct(string name, List<string> variables, Enumerator enumerator, bool inFrontier, string orderDimension = "") {
             this.variables = variables;
             this.name = name;
             this.enumerator = enumerator;
             this.inFrontier = inFrontier;
-            this.index = new Index();
+            this.index = new Index(orderDimension);
         }
 
         public List<string> CopyVars() {
@@ -90,7 +90,7 @@ namespace AssembleIVM.T_reduct {
                 t.count += tuple.count;
                 return t;
             } else {
-                if (index.orderHeader.Count == 0) {
+                if (index.orderDimension.Equals("")) {
                     section.Add(tuple);
                 } else {
                     int loc = index.FindLocation(section, tuple);

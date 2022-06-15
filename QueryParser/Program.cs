@@ -20,7 +20,15 @@ namespace QueryParser {
             Dictionary<string, Update> datasetUpdates = new Dictionary<string, Update>();
             List<ManualGJT> subModels = new List<ManualGJT> { 
                 new Copyfactgross1(),
-                new Computenetavail2()
+                new Computenetavail2(),
+                new Rollupdc001toyear3(),
+                new Fillinteams4(),
+                new Sumhoursperteam5(),
+                new Rollupteams6(),
+                new Rollupdepartments6(),
+                new Computeadjustedhours7(),
+                new DC002withYL8(),
+                new Movingtotal8()
             };
             foreach(ManualGJT sm in subModels) {
                 RunSubModel(sm, datasetUpdates);
@@ -30,7 +38,7 @@ namespace QueryParser {
         public static void RunSubModel(ManualGJT mgjt, Dictionary<string, Update> datasetUpdates) {
             string name = mgjt.GetName();
             GeneralJoinTree gjt = mgjt.Construct();
-            ReductTree reduct = new ReductTree(gjt, name);
+            ReductTree reduct = gjt.GenerateReduct(name);
             reduct.RunModel(datasetUpdates, false, false, true);
         }
     }

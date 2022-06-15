@@ -37,7 +37,7 @@ namespace AssembleIVM.QueryParser.TreeNodes.Predicates.AlgebraicExpressions {
             if (child.GetType().Name.Equals("DimensionName") ||
                 child.GetType().Name.Equals("RelationAttribute")) {
                 return new Number(child.FindValue(header, values));
-            } else if (child.GetType().Name.Equals("Number")) {
+            } else if (child.GetType().Name.Equals("NumberNode")) {
                 return new Number(child.GetString());
             } else {
                 AlgebraicExpression algebraicExpression = (AlgebraicExpression)child;

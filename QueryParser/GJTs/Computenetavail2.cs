@@ -26,9 +26,9 @@ namespace AssembleIVM.GJTs {
             List<string> vars6 = new List<string> { "b.employee", "b.fact", "b.week", "b.hours" };
             List<string> vars7 = new List<string> { "c.employee", "c.fact", "c.week", "c.hours" };
             List<string> vars4 = new List<string> { "a.employee", "a.week" };
-            GJTLeaf base1 = new GJTLeaf("base1", vars1, @"copyfactgross1", null);
-            GJTLeaf base2 = new GJTLeaf("base2", vars2, @"copyfactgross1", null);
-            GJTLeaf base3 = new GJTLeaf("base3", vars3, @"copyfactgross1", null);              
+            GJTLeaf base1 = new GJTLeaf("base1", vars1, "copyfactgross1", null);
+            GJTLeaf base2 = new GJTLeaf("base2", vars2, "copyfactgross1", null);
+            GJTLeaf base3 = new GJTLeaf("base3", vars3, "copyfactgross1", null);              
             GJTLeaf base4 = new GJTLeaf("base4", new List<string> { "d.fact" }, @"Factnet", new FrontierEnumerator());
             base4.inFrontier = true;
             TreeNode selPred1 = ParsePredicate("a.fact == \"gross availability\"");
@@ -64,10 +64,9 @@ namespace AssembleIVM.GJTs {
                 root,
                 new HashSet<GJTNode> { f1, f2, f3, base4 },
                 new HashSet<GJTLeaf> { base1, base2, base3, base4 },
-                new EnumComputenet(),
                 new List<string> { "Employee", "Fact", "Week", "Hours" },
                 new List<string> { "a.employee", "d.fact", "a.week", "a.hours - b.hours - c.hours" },
-                "copyfactgross1"
+                new List<string> { "copyfactgross1" }
                 );
         }
 

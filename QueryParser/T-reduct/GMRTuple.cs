@@ -36,21 +36,31 @@ namespace AssembleIVM {
 
         public GMRTuple SplitWeekAndYearValue(int weekIndex) {
             List<string> fieldList = new List<string>();
-            for (int i = 0; i < fields.Length + 1; i++) {
+            for (int i = 0; i < fields.Length; i++) {
                 if (!(i == weekIndex)) {
                     fieldList.Add(fields[i]);
                 } else {
-                    if (int.TryParse(fields[i], out _)) {
-                        fieldList.Append("-");
-                        fieldList.Append(fields[i]);
+                    if (!fields[i].Contains(".")) {
+                        fieldList.Add("-");
+                        fieldList.Add(fields[i]);
                     } else {
-                        fields.Append(fields[i].Substring(1, 2));
-                        fields.Append(fields[i].Substring(4, 4));
+                        fieldList.Add(fields[i].Substring(1, 2));
+                        fieldList.Add(fields[i].Substring(4, 4));
                     }
                 }
             }
             return new GMRTuple(fields.Length + 1, count) {
                 fields = fieldList.ToArray()
+            };
+        }
+
+        public GMRTuple UniteWeekAndYearValues(int firstWeekIndex) {
+            List<string> newFields = new List<string>(fields);
+            string week = $"W{fields[firstWeekIndex]}.{fields[firstWeekIndex + 1]}";
+            newFields[firstWeekIndex] = week;
+            newFields.RemoveAt(firstWeekIndex + 1);
+            return new GMRTuple(newFields.Count, this.count) {
+                fields = newFields.ToArray()
             };
         }
     }

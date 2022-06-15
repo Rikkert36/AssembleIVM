@@ -31,8 +31,9 @@ namespace AssembleIVM.GJTs {
                  new List<string> { "C.a", "C.b" },
                  new List<GJTNode> { C },
                  new List<TreeNode> { null},
-                 null,
-                 "sum");
+                 null, 
+                 "sum",
+                 "");
             GJTInnerNode n2 = new GJTSingleJoinNode(
                 "n2",
                 new List<string> { "A.a"},
@@ -43,7 +44,7 @@ namespace AssembleIVM.GJTs {
                 n2,
                 new HashSet<GJTNode> { },
                 new HashSet<GJTLeaf> { A, B, C },
-                null, null, null, "");
+                null, null, new List<string> { });
         }
 
 

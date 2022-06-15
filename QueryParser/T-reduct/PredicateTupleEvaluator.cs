@@ -5,6 +5,7 @@ using QueryParser.NewParser.TreeNodes.Predicates;
 using QueryParser.NewParser.TreeNodes.Terminals;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -39,15 +40,15 @@ namespace AssembleIVM.T_reduct {
                 case("=="):
                     return left == right;
                 case (">"):
-                    return double.Parse(left) > double.Parse(right);
+                    return double.Parse(left, CultureInfo.InvariantCulture) > double.Parse(right, CultureInfo.InvariantCulture);
                 case (">="):
-                    return double.Parse(left) >= double.Parse(right);
+                    return double.Parse(left, CultureInfo.InvariantCulture) >= double.Parse(right, CultureInfo.InvariantCulture);
                 case ("<"):
-                    return double.Parse(left) < double.Parse(right);
+                    return double.Parse(left, CultureInfo.InvariantCulture) < double.Parse(right, CultureInfo.InvariantCulture);
                 case ("<="):
-                    return double.Parse(left) <= double.Parse(right);
+                    return double.Parse(left, CultureInfo.InvariantCulture) <= double.Parse(right, CultureInfo.InvariantCulture);
                 case ("!="):
-                    return double.Parse(left) != double.Parse(right);
+                    return double.Parse(left, CultureInfo.InvariantCulture) != double.Parse(right, CultureInfo.InvariantCulture);
                 default:
                     throw new Exception($"Unknown compare operator: {comparison.compareOperator}");
             }

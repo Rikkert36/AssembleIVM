@@ -12,11 +12,13 @@ namespace QueryParser.GJTComputerFiles {
         public bool inFrontier = false;
         public string name;
         public Enumerator enumerator;
+        public string orderDimension;
 
-        public GJTNode(string name, List<string> variables, Enumerator enumerator) {
+        public GJTNode(string name, List<string> variables, Enumerator enumerator, string orderDimension = "") {
             this.name = name;
             this.variables = variables;
             this.enumerator = enumerator;
+            this.orderDimension = orderDimension;
         }
 
         public HashSet<string> CopyVars() {

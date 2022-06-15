@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace AssembleIVM.T_reduct {
@@ -13,7 +14,7 @@ namespace AssembleIVM.T_reduct {
                 value = int.Parse(stringValue);
             } else {
                 isInt = false;
-                value = double.Parse(stringValue);
+                value = decimal.Parse(stringValue, CultureInfo.InvariantCulture);
             }
         }
 

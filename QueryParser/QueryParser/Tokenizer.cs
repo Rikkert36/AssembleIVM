@@ -10,7 +10,7 @@ namespace QueryParser.NewParser {
         readonly StreamObject input;
         Token current;
         public readonly string relOperators = " natjoin thetajoin carpro intersect union minus ";
-        readonly string keywords = " project select from natjoin thetajoin carpro intersect union minus and or as sum count min max average ";
+        readonly string keywords = " int project select from natjoin thetajoin carpro intersect union minus and or as sum count min max average ";
         
         public Tokenizer(StreamObject input) {
             this.input = input;

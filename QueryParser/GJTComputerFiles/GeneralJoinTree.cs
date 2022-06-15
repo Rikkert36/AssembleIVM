@@ -10,22 +10,25 @@ namespace QueryParser.GJTComputerFiles {
         public GJTNode root;
         public HashSet<GJTNode> frontier;
         public HashSet<GJTLeaf> leafs;
-        public RootEnumerator enumerator;
         public List<string> outputHeader;
         public List<string> outputVariables;
-        public string unionData;
+        public List<string> unionData;
 
         public bool splitWeekAndYearValues = false;
-        
+        public bool uniteWeekAndYearValues = false;
+
         public GeneralJoinTree(GJTNode root, HashSet<GJTNode> frontier, HashSet<GJTLeaf> leafs,
-            RootEnumerator enumerator, List<string> outputHeader, List<string> outputVariables, string unionData) {
+             List<string> outputHeader, List<string> outputVariables, List<string> unionData) {
             this.root = root;
             this.frontier = frontier;
             this.leafs = leafs;
-            this.enumerator = enumerator;
             this.outputHeader = outputHeader;
             this.outputVariables = outputVariables;
             this.unionData = unionData;
+        }
+
+        virtual public ReductTree GenerateReduct(string name) {
+            return new ReductTree(this, name);
         }
     }
 }

@@ -1,0 +1,417 @@
+Fact;Week;Percentage
+gross availability;W01.2022;0
+holiday;W01.2022;0.04
+education;W01.2022;0
+net availability;W01.2022;0
+gross availability;W02.2022;0
+holiday;W02.2022;0
+education;W02.2022;0.13
+net availability;W02.2022;0
+gross availability;W03.2022;0
+holiday;W03.2022;0.12
+education;W03.2022;0
+net availability;W03.2022;0
+gross availability;W04.2022;0
+holiday;W04.2022;0
+education;W04.2022;0
+net availability;W04.2022;0.07
+gross availability;W05.2022;0
+holiday;W05.2022;0
+education;W05.2022;0
+net availability;W05.2022;0
+gross availability;W06.2022;0
+holiday;W06.2022;0.4
+education;W06.2022;0.21
+net availability;W06.2022;0
+gross availability;W07.2022;0.2
+holiday;W07.2022;0
+education;W07.2022;0
+net availability;W07.2022;0
+gross availability;W08.2022;0.37
+holiday;W08.2022;0
+education;W08.2022;0
+net availability;W08.2022;0
+gross availability;W09.2022;0
+holiday;W09.2022;0
+education;W09.2022;0
+net availability;W09.2022;0
+gross availability;W10.2022;0
+holiday;W10.2022;0
+education;W10.2022;0
+net availability;W10.2022;0
+gross availability;W11.2022;0
+holiday;W11.2022;0
+education;W11.2022;0
+net availability;W11.2022;0
+gross availability;W12.2022;0
+holiday;W12.2022;0
+education;W12.2022;0.31
+net availability;W12.2022;0
+gross availability;W13.2022;0
+holiday;W13.2022;0
+education;W13.2022;0
+net availability;W13.2022;0
+gross availability;W14.2022;0
+holiday;W14.2022;0
+education;W14.2022;0
+net availability;W14.2022;0
+gross availability;W15.2022;0
+holiday;W15.2022;0
+education;W15.2022;0
+net availability;W15.2022;0.39
+gross availability;W16.2022;0
+holiday;W16.2022;0
+education;W16.2022;0
+net availability;W16.2022;0.24
+gross availability;W17.2022;0
+holiday;W17.2022;0
+education;W17.2022;0
+net availability;W17.2022;0
+gross availability;W18.2022;0
+holiday;W18.2022;0.43
+education;W18.2022;0
+net availability;W18.2022;0.24
+gross availability;W19.2022;0
+holiday;W19.2022;0.01
+education;W19.2022;0
+net availability;W19.2022;0
+gross availability;W20.2022;0.5
+holiday;W20.2022;0
+education;W20.2022;0
+net availability;W20.2022;0
+gross availability;W21.2022;0.27
+holiday;W21.2022;0
+education;W21.2022;0
+net availability;W21.2022;0.24
+gross availability;W22.2022;0.37
+holiday;W22.2022;0
+education;W22.2022;0
+net availability;W22.2022;0
+gross availability;W23.2022;0
+holiday;W23.2022;0
+education;W23.2022;0
+net availability;W23.2022;0
+gross availability;W24.2022;0
+holiday;W24.2022;0
+education;W24.2022;0
+net availability;W24.2022;0
+gross availability;W25.2022;0.4
+holiday;W25.2022;0
+education;W25.2022;0.26
+net availability;W25.2022;0
+gross availability;W26.2022;0
+holiday;W26.2022;0.11
+education;W26.2022;0
+net availability;W26.2022;0
+gross availability;W27.2022;0
+holiday;W27.2022;0
+education;W27.2022;0.4
+net availability;W27.2022;0
+gross availability;W28.2022;0
+holiday;W28.2022;0
+education;W28.2022;0.22
+net availability;W28.2022;0
+gross availability;W29.2022;0
+holiday;W29.2022;0
+education;W29.2022;0
+net availability;W29.2022;0.28
+gross availability;W30.2022;0
+holiday;W30.2022;0
+education;W30.2022;0
+net availability;W30.2022;0.14
+gross availability;W31.2022;0
+holiday;W31.2022;0
+education;W31.2022;0
+net availability;W31.2022;0
+gross availability;W32.2022;0.01
+holiday;W32.2022;0
+education;W32.2022;0
+net availability;W32.2022;0
+gross availability;W33.2022;0
+holiday;W33.2022;0
+education;W33.2022;0
+net availability;W33.2022;0
+gross availability;W34.2022;0
+holiday;W34.2022;0.35
+education;W34.2022;0
+net availability;W34.2022;0
+gross availability;W35.2022;0
+holiday;W35.2022;0
+education;W35.2022;0
+net availability;W35.2022;0.42
+gross availability;W36.2022;0
+holiday;W36.2022;0.4
+education;W36.2022;0.1
+net availability;W36.2022;0
+gross availability;W37.2022;0.4
+holiday;W37.2022;0
+education;W37.2022;0
+net availability;W37.2022;0
+gross availability;W38.2022;0
+holiday;W38.2022;0
+education;W38.2022;0
+net availability;W38.2022;0
+gross availability;W39.2022;0.16
+holiday;W39.2022;0
+education;W39.2022;0.29
+net availability;W39.2022;0
+gross availability;W40.2022;0
+holiday;W40.2022;0
+education;W40.2022;0
+net availability;W40.2022;0
+gross availability;W41.2022;0
+holiday;W41.2022;0
+education;W41.2022;0
+net availability;W41.2022;0
+gross availability;W42.2022;0.41
+holiday;W42.2022;0
+education;W42.2022;0.42
+net availability;W42.2022;0
+gross availability;W43.2022;0
+holiday;W43.2022;0
+education;W43.2022;0
+net availability;W43.2022;0
+gross availability;W44.2022;0
+holiday;W44.2022;0
+education;W44.2022;0
+net availability;W44.2022;0
+gross availability;W45.2022;0
+holiday;W45.2022;0
+education;W45.2022;0
+net availability;W45.2022;0
+gross availability;W46.2022;0
+holiday;W46.2022;0
+education;W46.2022;0
+net availability;W46.2022;0.5
+gross availability;W47.2022;0.28
+holiday;W47.2022;0
+education;W47.2022;0.07
+net availability;W47.2022;0
+gross availability;W48.2022;0.11
+holiday;W48.2022;0
+education;W48.2022;0
+net availability;W48.2022;0
+gross availability;W49.2022;0
+holiday;W49.2022;0
+education;W49.2022;0
+net availability;W49.2022;0
+gross availability;W50.2022;0
+holiday;W50.2022;0
+education;W50.2022;0
+net availability;W50.2022;0
+gross availability;W51.2022;0
+holiday;W51.2022;0.11
+education;W51.2022;0.39
+net availability;W51.2022;0
+gross availability;W52.2022;0.3
+holiday;W52.2022;0
+education;W52.2022;0
+net availability;W52.2022;0
+gross availability;W01.2023;0.15
+holiday;W01.2023;0
+education;W01.2023;0
+net availability;W01.2023;0
+gross availability;W02.2023;0
+holiday;W02.2023;0.08
+education;W02.2023;0
+net availability;W02.2023;0
+gross availability;W03.2023;0
+holiday;W03.2023;0.41
+education;W03.2023;0
+net availability;W03.2023;0
+gross availability;W04.2023;0
+holiday;W04.2023;0
+education;W04.2023;0
+net availability;W04.2023;0
+gross availability;W05.2023;0
+holiday;W05.2023;0
+education;W05.2023;0
+net availability;W05.2023;0
+gross availability;W06.2023;0
+holiday;W06.2023;0.44
+education;W06.2023;0
+net availability;W06.2023;0
+gross availability;W07.2023;0
+holiday;W07.2023;0
+education;W07.2023;0.07
+net availability;W07.2023;0
+gross availability;W08.2023;0
+holiday;W08.2023;0.38
+education;W08.2023;0.25
+net availability;W08.2023;0
+gross availability;W09.2023;0
+holiday;W09.2023;0
+education;W09.2023;0.37
+net availability;W09.2023;0
+gross availability;W10.2023;0.14
+holiday;W10.2023;0.03
+education;W10.2023;0
+net availability;W10.2023;0
+gross availability;W11.2023;0
+holiday;W11.2023;0.41
+education;W11.2023;0
+net availability;W11.2023;0
+gross availability;W12.2023;0.03
+holiday;W12.2023;0
+education;W12.2023;0
+net availability;W12.2023;0
+gross availability;W13.2023;0
+holiday;W13.2023;0
+education;W13.2023;0
+net availability;W13.2023;0
+gross availability;W14.2023;0
+holiday;W14.2023;0
+education;W14.2023;0
+net availability;W14.2023;0
+gross availability;W15.2023;0
+holiday;W15.2023;0
+education;W15.2023;0
+net availability;W15.2023;0
+gross availability;W16.2023;0
+holiday;W16.2023;0
+education;W16.2023;0
+net availability;W16.2023;0
+gross availability;W17.2023;0
+holiday;W17.2023;0
+education;W17.2023;0
+net availability;W17.2023;0
+gross availability;W18.2023;0
+holiday;W18.2023;0
+education;W18.2023;0
+net availability;W18.2023;0
+gross availability;W19.2023;0
+holiday;W19.2023;0
+education;W19.2023;0
+net availability;W19.2023;0
+gross availability;W20.2023;0
+holiday;W20.2023;0
+education;W20.2023;0
+net availability;W20.2023;0
+gross availability;W21.2023;0
+holiday;W21.2023;0
+education;W21.2023;0
+net availability;W21.2023;0.31
+gross availability;W22.2023;0
+holiday;W22.2023;0.32
+education;W22.2023;0
+net availability;W22.2023;0.11
+gross availability;W23.2023;0
+holiday;W23.2023;0
+education;W23.2023;0
+net availability;W23.2023;0
+gross availability;W24.2023;0.17
+holiday;W24.2023;0.19
+education;W24.2023;0
+net availability;W24.2023;0
+gross availability;W25.2023;0.04
+holiday;W25.2023;0
+education;W25.2023;0
+net availability;W25.2023;0
+gross availability;W26.2023;0
+holiday;W26.2023;0
+education;W26.2023;0
+net availability;W26.2023;0
+gross availability;W27.2023;0
+holiday;W27.2023;0
+education;W27.2023;0
+net availability;W27.2023;0
+gross availability;W28.2023;0
+holiday;W28.2023;0
+education;W28.2023;0
+net availability;W28.2023;0
+gross availability;W29.2023;0
+holiday;W29.2023;0
+education;W29.2023;0.38
+net availability;W29.2023;0.04
+gross availability;W30.2023;0.04
+holiday;W30.2023;0.26
+education;W30.2023;0
+net availability;W30.2023;0
+gross availability;W31.2023;0
+holiday;W31.2023;0
+education;W31.2023;0
+net availability;W31.2023;0.27
+gross availability;W32.2023;0
+holiday;W32.2023;0
+education;W32.2023;0.14
+net availability;W32.2023;0
+gross availability;W33.2023;0
+holiday;W33.2023;0
+education;W33.2023;0
+net availability;W33.2023;0
+gross availability;W34.2023;0
+holiday;W34.2023;0
+education;W34.2023;0
+net availability;W34.2023;0
+gross availability;W35.2023;0
+holiday;W35.2023;0
+education;W35.2023;0
+net availability;W35.2023;0
+gross availability;W36.2023;0
+holiday;W36.2023;0
+education;W36.2023;0
+net availability;W36.2023;0.07
+gross availability;W37.2023;0
+holiday;W37.2023;0
+education;W37.2023;0
+net availability;W37.2023;0
+gross availability;W38.2023;0
+holiday;W38.2023;0
+education;W38.2023;0
+net availability;W38.2023;0
+gross availability;W39.2023;0
+holiday;W39.2023;0
+education;W39.2023;0
+net availability;W39.2023;0
+gross availability;W40.2023;0
+holiday;W40.2023;0
+education;W40.2023;0
+net availability;W40.2023;0
+gross availability;W41.2023;0
+holiday;W41.2023;0
+education;W41.2023;0
+net availability;W41.2023;0.44
+gross availability;W42.2023;0.36
+holiday;W42.2023;0
+education;W42.2023;0
+net availability;W42.2023;0
+gross availability;W43.2023;0
+holiday;W43.2023;0
+education;W43.2023;0
+net availability;W43.2023;0.27
+gross availability;W44.2023;0
+holiday;W44.2023;0
+education;W44.2023;0
+net availability;W44.2023;0
+gross availability;W45.2023;0
+holiday;W45.2023;0
+education;W45.2023;0
+net availability;W45.2023;0
+gross availability;W46.2023;0
+holiday;W46.2023;0
+education;W46.2023;0
+net availability;W46.2023;0
+gross availability;W47.2023;0.11
+holiday;W47.2023;0
+education;W47.2023;0
+net availability;W47.2023;0
+gross availability;W48.2023;0
+holiday;W48.2023;0
+education;W48.2023;0
+net availability;W48.2023;0
+gross availability;W49.2023;0
+holiday;W49.2023;0
+education;W49.2023;0
+net availability;W49.2023;0
+gross availability;W50.2023;0.21
+holiday;W50.2023;0
+education;W50.2023;0
+net availability;W50.2023;0.06
+gross availability;W51.2023;0
+holiday;W51.2023;0
+education;W51.2023;0
+net availability;W51.2023;0
+gross availability;W52.2023;0.4
+holiday;W52.2023;0.1
+education;W52.2023;0.15
+net availability;W52.2023;0.37

@@ -18,5 +18,6 @@ namespace AssembleIVM.GJTs {
             return new PredicateParser().Parse(new Tokenizer(new StreamObject(s)));
         }
 
+
     }
 }

@@ -52,6 +52,16 @@ namespace AssembleIVM {
             return result;
         }
 
+        public static HashSet<string> SetMinus(HashSet<string> left, HashSet<string> right) {
+            HashSet<string> result = new HashSet<string>();
+            foreach (string s in left) {
+                if (!right.Contains(s)) {
+                    result.Add(s);
+                }
+            }
+            return result;
+        }
+
         public static List<string> Union(List<string> t1, List<string> t2) {
             List<string> result = new List<string>();
             foreach (string s in t1) result.Add(s);
@@ -89,6 +99,23 @@ namespace AssembleIVM {
             return result;
         }
 
+        public static HashSet<string> GetInEquiVars(List<TreeNode> predicates) {
+            HashSet<string> result = new HashSet<string>();
+            foreach (TreeNode predicate in predicates) {
+                result.UnionWith(GetInEquiVars(predicate));
+            }
+            return result;
+        }
+
+        public static bool HasWeekValue(List<string> variables) {
+            for (int i = 0; i < variables.Count; i++) {
+                string var = variables[i];
+                string[] slices = var.Split(".");
+                if (Array.IndexOf(slices, "week") >= 0) return true;
+            }
+            return false;
+        }
+
         public static int GetWeekIndex(List<string> variables) {
             for (int i = 0; i < variables.Count; i++) {
                 string var = variables[i];
@@ -97,6 +124,7 @@ namespace AssembleIVM {
             }
             throw new Exception("header does not have a week value");
         }
+
 
         public static bool DimensionNameEquals(TreeNode treeNode, string s) {
             if (treeNode.GetType().Equals("DimensionName")) {
@@ -107,6 +135,18 @@ namespace AssembleIVM {
                 return relationAttribute.GetString().Equals(s);
             }
             return false;
+        }
+
+        public static string ToString(List<string> fields) {
+            string result = "";
+            foreach (string f in fields) {
+                if (int.TryParse(f, out _) || double.TryParse(f, out _)) {
+                    result += $"number({f})";
+                } else {
+                    result += f;
+                }
+            }
+            return result;
         }
 
         public static string Opposite(string s) {
@@ -164,7 +204,63 @@ namespace AssembleIVM {
                         RelationAttribute raN = (RelationAttribute)n;
                         return new HashSet<string> { raN.GetString() };
                     }
-                case "Number": {
+                case "NumberNode": {
+                        return new HashSet<string> {  };
+                    }
+                case "StringNode": {
+                        return new HashSet<string> { };
+                    }
+
+            }
+            throw new Exception($"You missed predicate type: {n.GetType().Name}");
+        }
+
+        private static HashSet<string> GetInEquiVars(TreeNode n) {
+            if (n == null || n.GetType().Name.Equals("CartesianProduct")) return new HashSet<string>();
+            switch (n.GetType().Name) {
+                case "And": {
+                        And andN = (And)n;
+                        HashSet<string> result = GetInEquiVars(andN.left);
+                        result.UnionWith(GetInEquiVars(andN.right));
+                        return result;
+                    }
+                case "Or": {
+                        Or orN = (Or)n;
+                        HashSet<string> result = GetInEquiVars(orN.left);
+                        result.UnionWith(GetInEquiVars(orN.right));
+                        return result;
+                    }
+                case "Comparison": {
+                        Comparison cN = (Comparison)n;
+                        if (!cN.compareOperator.Equals("==")) {
+                            HashSet<string> result = GetInEquiVars(cN.left);
+                            result.UnionWith(GetInEquiVars(cN.right));
+                            return result;
+                        } else {
+                            return new HashSet<string>();
+                        }
+                    }
+                case "Term": {
+                        Term t = (Term)n;
+                        HashSet<string> result = GetInEquiVars(t.left);
+                        result.UnionWith(GetInEquiVars(t.right));
+                        return result;
+                    }
+                case "Factor": {
+                        Factor f = (Factor)n;
+                        HashSet<string> result = GetInEquiVars(f.left);
+                        result.UnionWith(GetInEquiVars(f.right));
+                        return result;
+                    }
+                case "DimensionName": {
+                        DimensionName dN = (DimensionName)n;
+                        return new HashSet<string> { dN.value };
+                    }
+                case "RelationAttribute": {
+                        RelationAttribute raN = (RelationAttribute)n;
+                        return new HashSet<string> { raN.GetString() };
+                    }
+                case "NumberNode": {
                         NumberNode nN = (NumberNode)n;
                         return new HashSet<string> { nN.value };
                     }

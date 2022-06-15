@@ -9,7 +9,7 @@ using System.Text;
 namespace QueryParser.GJTComputerFiles.ConstructorStructures {
     class GJTLeaf : GJTNode {
         public string dataset;
-        public GJTLeaf(string name, List<string> variables, string dataset, Enumerator enumerator) : base(name, variables, enumerator) {
+        public GJTLeaf(string name, List<string> variables, string dataset, Enumerator enumerator, string orderDimension = "") : base(name, variables, enumerator, orderDimension) {
             this.dataset = dataset;
         }
 

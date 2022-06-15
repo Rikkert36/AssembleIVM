@@ -11,8 +11,8 @@ namespace QueryParser.GJTComputerFiles.ConstructorStructures {
     abstract class GJTInnerNode : GJTNode {
         public List<GJTNode> children;
         public List<TreeNode> predicates;
-        public GJTInnerNode(string name, List<string> variables, List<GJTNode> children, List<TreeNode> predicates, Enumerator enumerator) :
-            base(name, variables, enumerator) {
+        public GJTInnerNode(string name, List<string> variables, List<GJTNode> children, List<TreeNode> predicates, Enumerator enumerator, string orderDimension = "") :
+            base(name, variables, enumerator, orderDimension) {
             this.children = children;
             this.predicates = predicates;
         }  

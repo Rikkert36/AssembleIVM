@@ -11,11 +11,14 @@ using System.Text;
 namespace AssembleIVM.GJTComputerFiles.ConstructorStructures {
     class GJTAggregateNode : GJTInnerNode {
         string aggregateFunction;
+        string aggregateDimension;
         public GJTAggregateNode(string name, List<string> variables, List<GJTNode> children, 
-            List<TreeNode> predicates, Enumerator enumerator, string aggregateFunction) 
+            List<TreeNode> predicates, Enumerator enumerator, string aggregateFunction, string aggregateDimension) 
             : base(name, variables, children, predicates, enumerator) {
             this.aggregateFunction = aggregateFunction;
+            this.aggregateDimension = aggregateDimension;
         }
+    
 
         public override NodeReduct GenerateReduct(string modelName) {
             List<NodeReduct> reductChildren = new List<NodeReduct>();
@@ -23,7 +26,8 @@ namespace AssembleIVM.GJTComputerFiles.ConstructorStructures {
                 reductChildren.Add(child.GenerateReduct(modelName));
 
             }
-            AggregateNode result = new AggregateNode(this.name, this.variables, reductChildren, this.predicates, this.enumerator, this.inFrontier, this.aggregateFunction);
+            AggregateNode result = new AggregateNode(this.name, this.variables, reductChildren, this.predicates, 
+                this.enumerator, this.inFrontier, this.aggregateFunction, this.aggregateDimension);
             enumerator.rho = result;
             foreach (NodeReduct child in result.children) {
                 child.SetParent(result);

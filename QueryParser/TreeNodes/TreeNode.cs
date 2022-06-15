@@ -11,9 +11,8 @@ namespace QueryParser.NewParser.TreeNodes {
         abstract public string GetString();
 
         public string FindValue(List<string> header, string[] values) {
-            int i = header.IndexOf(GetString());
-            if (i != -1) {
-                return values[i];
+            if (header.Contains(GetString())) {
+                return values[header.IndexOf(GetString())];
             } else {
                 return "valueNotInHeader";
             }

@@ -14,8 +14,8 @@ namespace AssembleIVM.GJTs {
         }
         public override GeneralJoinTree Construct() { 
             GJTLeaf l1 = new GJTLeaf("l1", new List<string>
-            { "DC005.employee", "DC005.week", "DC005.hours" }, @"DC005", new FrontierEnumerator());
-            GJTLeaf l2 = new GJTLeaf("l2", new List<string> { "Factgross.fact" }, @"Factgross", new FrontierEnumerator());
+            { "DC005.employee", "DC005.week", "DC005.hours" }, "DC005", new FrontierEnumerator());
+            GJTLeaf l2 = new GJTLeaf("l2", new List<string> { "Factgross.fact" }, "Factgross", new FrontierEnumerator());
             l1.inFrontier = true;
             l2.inFrontier = true;
 
@@ -28,9 +28,9 @@ namespace AssembleIVM.GJTs {
                 );
 
             return new GeneralJoinTree(n1, new HashSet<GJTNode> { l1, l2 }, new HashSet<GJTLeaf> { l1, l2},
-                new EnumCopyfactgross(), new List<string> { "Employee", "Fact", "Week", "Hours"},
+                new List<string> { "Employee", "Fact", "Week", "Hours"},
                 new List<string> {"DC005.employee;", "Factgross.fact", "DC005.week", "DC005.hours" },
-                "DC001");
+                new List<string> { "DC001" });
         }
 
     }

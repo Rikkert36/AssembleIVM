@@ -9,9 +9,12 @@ namespace AssembleIVM.T_reduct {
         public bool minusIndex = false;
         public List<string> header { get; set; }
         public List<string> eqJoinHeader { get; set; }
-        public List<string> orderHeader = new List<string>();
+        public string orderDimension;
         public Dictionary<string, List<GMRTuple>> tupleMap { get; set; }
- 
+    
+        public Index(string orderDimension) {
+            this.orderDimension = orderDimension;
+        }
 
         public void RemoveKey(string[] tuple) {
             List<string> eqJoinVars = new List<string>();
@@ -54,14 +57,16 @@ namespace AssembleIVM.T_reduct {
         public List<GMRTuple> SemiJoin(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
             if (predicate == null) {
                 return Get(rightTuple.fields);
+            } else if (predicate.GetType().Name.Equals("CartesianProduct")) {
+                return Get(rightTuple.fields);
             } else {
-                return new JoinTupleGenerator(eqJoinHeader, orderHeader,rightHeader, rightTuple, predicate)
+                return new JoinTupleGenerator(eqJoinHeader, orderDimension, rightHeader, rightTuple, predicate)
                     .RetrieveCorrespondingTuples(this);
             }
         }
 
         public bool AnyJoin(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
-            return new JoinTupleGenerator(eqJoinHeader, orderHeader, rightHeader, rightTuple, predicate).DoesJoin(this);
+            return new JoinTupleGenerator(eqJoinHeader, orderDimension, rightHeader, rightTuple, predicate).DoesJoin(this);
         }
 
         /*private Tuple<GMRTuple, bool> Contains(GMRTuple tuple) {
@@ -80,18 +85,19 @@ namespace AssembleIVM.T_reduct {
         }     
 
         public int FindLocation(List<GMRTuple> section, GMRTuple tuple) {
-            int orderDimensionIndex = 0;
-            string orderDimension = orderHeader[orderDimensionIndex];
+            /*int orderDimensionIndex = 0;
+            string orderDimension = orderHeader[orderDimensionIndex];*/
             int orderIndex = header.IndexOf(orderDimension);
             string orderValue = tuple.fields[orderIndex];
             for (int i = 0; i < section.Count; i++) {
                 if (Int32.Parse(orderValue) > Int32.Parse(section[i].fields[orderIndex])) {
-                    return - 1;
+                    return i;
                 } else if (Int32.Parse(orderValue) == Int32.Parse(section[i].fields[orderIndex])) {
-                    orderDimensionIndex++;
+                    /*orderDimensionIndex++;
                     orderDimension = orderHeader[orderDimensionIndex];
                     orderIndex = header.IndexOf(orderDimension);
-                    orderValue = tuple.fields[orderIndex];
+                    orderValue = tuple.fields[orderIndex];*/
+                    return i;
                 }
             }
             return section.Count;

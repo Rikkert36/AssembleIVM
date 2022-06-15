@@ -18,20 +18,19 @@ namespace AssembleIVM.T_reduct {
         public InnerNodeReduct root;
         public HashSet<NodeReduct> leafs;
         public string modelName;
-        public string unionData;
+        public List<string> unionData;
         List<HashSet<NodeReduct>> nodesPerLevel;
-        public RootEnumerator enumerator;
         public List<string> outputHeader;
-        private List<string> outputVariables;
-
+        protected List<string> outputVariables;
 
         public bool splitWeekAndYearValues;
+        public bool uniteWeekAndYearValues;
 
         public ReductTree(GeneralJoinTree GJT, string modelName) {
             this.modelName = modelName;
             this.unionData = GJT.unionData;
             this.splitWeekAndYearValues = GJT.splitWeekAndYearValues;
-            this.enumerator = GJT.enumerator;
+            this.uniteWeekAndYearValues = GJT.uniteWeekAndYearValues;
             this.nodesPerLevel = new List<HashSet<NodeReduct>>();
             this.root = (InnerNodeReduct)GJT.root.GenerateReduct(modelName);
             this.leafs = new HashSet<NodeReduct>();
@@ -66,21 +65,27 @@ namespace AssembleIVM.T_reduct {
         }
 
         private List<GMRTuple> Enumerate() {
-            return Enumerate(root, outputVariables).ToList();
+            if (uniteWeekAndYearValues) {
+                int firstWeekIndex = Utils.GetWeekIndex(outputVariables);
+                return Enumerate(root)
+                    .Select(tuple => tuple.UniteWeekAndYearValues(firstWeekIndex)).ToList();
+            } else {
+                return Enumerate(root).ToList();
+            }
         }
 
-        private IEnumerable<GMRTuple> Enumerate(InnerNodeReduct root, List<string> headerVariables) {
+        virtual protected IEnumerable<GMRTuple> Enumerate(InnerNodeReduct root) {
             List<string> combinedHeader = root.RetrieveHeader();
             foreach (List<GMRTuple> tupleList in root.index.tupleMap.Values) {
                 foreach (GMRTuple t in tupleList) {
                     foreach (List<string> s in root.Enumerate(t)) {
-                        yield return CreateTuple(headerVariables, combinedHeader, s);
+                        yield return CreateTuple(outputVariables, combinedHeader, s);
                     }
                 }
             }
         }
 
-        private GMRTuple CreateTuple(List<string> headerVariables, List<string> combinedHeader, List<string> variables) {
+        protected GMRTuple CreateTuple(List<string> headerVariables, List<string> combinedHeader, List<string> variables) {
             List<string> result = new List<string>();
             foreach (string headerVariable in headerVariables) {
                 TreeNode t = new AlgebraicExpressionParser().Parse(new Tokenizer(new StreamObject(headerVariable)));
@@ -89,9 +94,13 @@ namespace AssembleIVM.T_reduct {
                     result.Add(t.FindValue(combinedHeader, variables.ToArray()));
                 } else if (t.GetType().Name.Equals("Number")) {
                     result.Add(t.FindValue(combinedHeader, variables.ToArray()));
-                } else {
+                } else if (t.GetType().Name.Equals("Function")) {
+                    result.Add(t.FindValue(combinedHeader, variables.ToArray()));
+                } else if (t.GetType().IsSubclassOf(typeof(AlgebraicExpression))) {
                     AlgebraicExpression algebraicExpression = (AlgebraicExpression)t;
                     result.Add(Convert.ToString(algebraicExpression.Compute(combinedHeader, variables.ToArray()).value));
+                } else {
+                    throw new Exception($"Missed type {t.GetType().Name}, full name: {t.GetType().FullName}");
                 }
             }
             return new GMRTuple(result.Count, 1) {
@@ -113,7 +122,7 @@ namespace AssembleIVM.T_reduct {
             if (!Directory.Exists(location)) Directory.CreateDirectory(location);
             using (StreamWriter file = new StreamWriter(@$"{location}\output.txt", false)) {
                 file.Write(outputHeader[0]);
-                for(int i = 1; i < outputHeader.Count; i++) {
+                for (int i = 1; i < outputHeader.Count; i++) {
                     file.Write($";{outputHeader[i]}");
                 }
                 file.WriteLine("");
@@ -125,7 +134,7 @@ namespace AssembleIVM.T_reduct {
                     file.WriteLine("");
                 }
             };
-            
+
         }
 
         private void SaveIndices(NodeReduct nodeReduct) {
@@ -143,13 +152,16 @@ namespace AssembleIVM.T_reduct {
         }
 
         private List<GMRTuple> LoadUnionData(Dictionary<string, Update> datasetUpdates) {
-            if (unionData.Length == 0) return new List<GMRTuple>();
+            List<GMRTuple> result = new List<GMRTuple>();
             string location = @$"C:\Users\rmaas\Documents\Graduation project\code\QueryParser\QueryParser\data\input\";
-            if (datasetUpdates.ContainsKey(unionData)) {
-                return datasetUpdates[unionData].projectedAddedTuples.ToList();
-            } else {
-                return Utils.CSVToTupleSet(@$"{location}\{unionData}.txt", outputHeader).ToList();
+            foreach (string dataset in unionData) {
+                if (datasetUpdates.ContainsKey(dataset)) {
+                    result = result.Union(datasetUpdates[dataset].projectedAddedTuples.ToList()).ToList();
+                } else {
+                    result = result.Union(Utils.CSVToTupleSet(@$"{location}\{dataset}.txt", outputHeader).ToList()).ToList();
+                }
             }
+            return result;
         }
 
 
@@ -179,7 +191,7 @@ namespace AssembleIVM.T_reduct {
                         projectedRemovedTuples = new HashSet<GMRTuple>()
                     };
                 }
-                if (splitWeekAndYearValues) {
+                if (splitWeekAndYearValues && Utils.HasWeekValue(leaf.variables)) {
                     leaf.delta = leaf.delta.SplitWeekAndYearValues(Utils.GetWeekIndex(leaf.variables));
                 }
             }
@@ -240,23 +252,25 @@ namespace AssembleIVM.T_reduct {
 
         private Index RootIndex(InnerNodeReduct r) {
             int i = (r.predicates[0] == null) ? 0 : 1;
-            return new Index {
+            return new Index(r.children[i].index.orderDimension) {
                 tupleMap = new Dictionary<string, List<GMRTuple>>(),
                 header = new List<string>(r.variables),
                 eqJoinHeader = r.children[i].index.eqJoinHeader,
-                orderHeader = r.children[i].index.orderHeader
+                orderDimension = r.children[i].index.orderDimension
             };
         }
 
         private Index NewIndex(InnerNodeReduct parent, NodeReduct child) {
-            Index index = new Index {
+            Index index = new Index(child.index.orderDimension) {
                 tupleMap = new Dictionary<string, List<GMRTuple>>(),
                 header = new List<string>(child.variables)
             };
             List<string> childVars = child.CopyVars();
             HashSet<string> allEquiVars = Utils.GetEquiVars(parent.predicates);
+            //HashSet<string> allInEquiVars = Utils.GetInEquiVars(parent.predicates); //Not possible, because b.week.w and length then are both ordervalues
             allEquiVars.UnionWith(parent.variables);
-            index.eqJoinHeader = Utils.Intersect(childVars, allEquiVars);
+            HashSet<string> withoutInEquiVars = Utils.SetMinus(allEquiVars, new HashSet<string> { index.orderDimension });
+            index.eqJoinHeader = Utils.Intersect(childVars, withoutInEquiVars);
             return index;
         }
 

@@ -21,7 +21,11 @@ namespace AssembleIVM.T_reduct {
         public void ProjectTuples(List<string> projectHeader) {
             List<int> projectIndices = new List<int>();
             foreach (string s in projectHeader) {
-                projectIndices.Add(unprojectHeader.IndexOf(s));
+                int i = unprojectHeader.IndexOf(s);
+                if (i == 3) {
+                    Console.WriteLine("heej");
+                }
+                projectIndices.Add(i);
             }
             Dictionary<string, GMRTuple> addMap = new Dictionary<string, GMRTuple>();
             foreach (GMRTuple tuple in unprojectedAddedTuples) {
