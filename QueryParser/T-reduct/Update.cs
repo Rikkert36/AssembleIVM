@@ -8,28 +8,40 @@ namespace AssembleIVM.T_reduct {
         public List<string> unprojectHeader;
         public List<GMRTuple> unprojectedAddedTuples; //for every join
         public List<GMRTuple> unprojectedRemovedTuples;
-        public HashSet<GMRTuple> projectedAddedTuples;
-        public HashSet<GMRTuple> projectedRemovedTuples;
+        public Index projectedAddedTuples;
+        public Index projectedRemovedTuples;
         //public HashSet<GMRTuple> appliedAddedTuples;
         //public HashSet<GMRTuple> appliedRemovedTuples;
 
-        public Update() {
+        public Update(NodeReduct node) {
             unprojectedAddedTuples = new List<GMRTuple>();
             unprojectedRemovedTuples = new List<GMRTuple>();
+            projectedAddedTuples = node.index.CopyWithoutData();
+            projectedRemovedTuples = node.index.CopyWithoutData();
+        }
+
+        public Update(List<string> header, List<string> eqJoinHeader) {
+            unprojectedAddedTuples = new List<GMRTuple>();
+            unprojectedRemovedTuples = new List<GMRTuple>();
+            projectedAddedTuples = new Index("") { tupleMap = new Dictionary<string, List<GMRTuple>>(),
+                header = header, 
+                eqJoinHeader = eqJoinHeader };
+            projectedRemovedTuples = new Index("") {
+                tupleMap = new Dictionary<string, List<GMRTuple>>(),
+                header = header,
+                eqJoinHeader = eqJoinHeader
+            };
         }
 
         public void ProjectTuples(List<string> projectHeader) {
             List<int> projectIndices = new List<int>();
             foreach (string s in projectHeader) {
                 int i = unprojectHeader.IndexOf(s);
-                if (i == 3) {
-                    Console.WriteLine("heej");
-                }
                 projectIndices.Add(i);
             }
             Dictionary<string, GMRTuple> addMap = new Dictionary<string, GMRTuple>();
             foreach (GMRTuple tuple in unprojectedAddedTuples) {
-                GMRTuple projectTuple = new GMRTuple(projectHeader.Count, tuple.count) { 
+                GMRTuple projectTuple = new GMRTuple(projectHeader.Count, tuple.count) {
                     fields = projectIndices.Select(i => tuple.fields[i]).ToArray()
                 };
                 string key = projectTuple.ToString();
@@ -53,22 +65,76 @@ namespace AssembleIVM.T_reduct {
                     remMap.Add(key, projectTuple);
                 }
             }
-            projectedAddedTuples = new HashSet<GMRTuple>();
-            foreach (GMRTuple addition in addMap.Values) {
-                projectedAddedTuples.Add(addition);
+            
+            foreach (GMRTuple tuple in addMap.Values) {
+                AddAddedTuple(tuple);
             }
-            projectedRemovedTuples = new HashSet<GMRTuple>();
-            foreach (GMRTuple deletion in remMap.Values) {
-                projectedRemovedTuples.Add(deletion);
+
+            foreach (GMRTuple tuple in remMap.Values) {
+                AddRemovedTuple(tuple);
             }
         }
 
-        public Update SplitWeekAndYearValues(int weekIndex) {
-            return new Update {
-                projectedAddedTuples = new HashSet<GMRTuple>(projectedAddedTuples.Select(tuple => tuple.SplitWeekAndYearValue(weekIndex))),
-                projectedRemovedTuples = new HashSet<GMRTuple>(projectedRemovedTuples.Select(tuple => tuple.SplitWeekAndYearValue(weekIndex)))
-            };
+        public void SetAddedTuples(IEnumerable<GMRTuple> tupleList) {
+            foreach (GMRTuple tuple in tupleList) {
+                AddAddedTuple(tuple);
+            }
+        }
 
+        public void SetRemovedTuples(IEnumerable<GMRTuple> tupleList) {
+            foreach (GMRTuple tuple in tupleList) {
+                AddRemovedTuple(tuple);
+            }
+        }
+
+        public IEnumerable<GMRTuple> GetAddedTuples() {
+            foreach (List<GMRTuple> tupleList in projectedAddedTuples.tupleMap.Values) {
+                foreach (GMRTuple tuple in tupleList) {
+                    yield return tuple;
+                }
+            }
+        }
+
+        public IEnumerable<GMRTuple> GetRemovedTuples() {
+            foreach (List<GMRTuple> tupleList in projectedRemovedTuples.tupleMap.Values) {
+                foreach (GMRTuple tuple in tupleList) {
+                    yield return tuple;
+                }
+            }
+        }
+
+        public GMRTuple AddAddedTuple(GMRTuple tuple) {
+            List<GMRTuple> section = projectedAddedTuples.GetOrPlace(tuple.fields);
+            GMRTuple t = projectedAddedTuples.FindTuple(tuple, section);
+            if (t != null) {
+                t.count += tuple.count;
+                return t;
+            } else {
+                if (projectedAddedTuples.orderDimension.Equals("")) {
+                    section.Add(tuple);
+                } else {
+                    int loc = projectedAddedTuples.FindLocation(section, tuple);
+                    section.Insert(loc, tuple);
+                }
+                return tuple;
+            }
+        }
+
+        public GMRTuple AddRemovedTuple(GMRTuple tuple) {
+            List<GMRTuple> section = projectedRemovedTuples.GetOrPlace(tuple.fields);
+            GMRTuple t = projectedRemovedTuples.FindTuple(tuple, section);
+            if (t != null) {
+                t.count += tuple.count;
+                return t;
+            } else {
+                if (projectedRemovedTuples.orderDimension.Equals("")) {
+                    section.Add(tuple);
+                } else {
+                    int loc = projectedRemovedTuples.FindLocation(section, tuple);
+                    section.Insert(loc, tuple);
+                }
+                return tuple;
+            }
         }
 
     }

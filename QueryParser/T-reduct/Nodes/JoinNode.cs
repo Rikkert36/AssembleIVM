@@ -18,22 +18,22 @@ namespace AssembleIVM.T_reduct {
             if ((predicates[i] != null && predicates[i].GetType().Name.Equals("CartesianProduct")) ||
                 (predicates[o] != null && predicates[o].GetType().Name.Equals("CartesianProduct"))) {
                 if (predicates[i] == null) {
-                    foreach (GMRTuple tuple in node.delta.projectedAddedTuples) {
+                    foreach (GMRTuple tuple in node.delta.GetAddedTuples()) {
                         delta.unprojectedAddedTuples.Add(tuple);
                     }
-                    foreach (GMRTuple tuple in node.delta.projectedRemovedTuples) {
+                    foreach (GMRTuple tuple in node.delta.GetRemovedTuples()) {
                         delta.unprojectedRemovedTuples.Add(tuple);
                     }
                 } 
             } else if (predicates[i] == null) {
-                foreach (GMRTuple tuple in node.delta.projectedAddedTuples) {
+                foreach (GMRTuple tuple in node.delta.GetAddedTuples()) {
                     List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[o]);
                     foreach (GMRTuple t in correspondingTuples) {
                         delta.unprojectedAddedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count * t.count) { fields = tuple.fields});
                     }
                 }
-                foreach (GMRTuple tuple in node.delta.projectedRemovedTuples) {
+                foreach (GMRTuple tuple in node.delta.GetRemovedTuples()) {
                     List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[o]);
                     foreach (GMRTuple t in correspondingTuples) {
@@ -41,14 +41,14 @@ namespace AssembleIVM.T_reduct {
                     }
                 }
             } else {
-                foreach (GMRTuple tuple in node.delta.projectedAddedTuples) {
+                foreach (GMRTuple tuple in node.delta.GetAddedTuples()) {
                     List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[i]);
                     foreach (GMRTuple t in correspondingTuples) {
                         delta.unprojectedAddedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count * t.count) { fields = t.fields });
                     }
                 }
-                foreach (GMRTuple tuple in node.delta.projectedRemovedTuples) {
+                foreach (GMRTuple tuple in node.delta.GetRemovedTuples()) {
                     List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[i]);
                     foreach (GMRTuple t in correspondingTuples) {

@@ -36,12 +36,12 @@ namespace QueryParser {
                 new Countemployeesperteam13(),
                 new Determineemptyteams14()
             };
-            datasetUpdates["DC001"] = new Update() {
+            /*datasetUpdates["DC001"] = new Update() {
                 projectedAddedTuples = new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "8" } } },
                 projectedRemovedTuples = new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "0" } } }
-            };
+            };*/
             foreach (ManualGJT sm in subModels) {
-                UpdateSubModel(sm, datasetUpdates);
+                RunSubModel(sm, datasetUpdates);
             }
         }
 

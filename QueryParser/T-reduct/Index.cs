@@ -15,6 +15,15 @@ namespace AssembleIVM.T_reduct {
             this.orderDimension = orderDimension;
         }
 
+        public Index CopyWithoutData() {
+            return new Index(orderDimension) {
+                tupleMap = new Dictionary<string, List<GMRTuple>>(),
+                header = header,
+                eqJoinHeader = eqJoinHeader,
+            };
+        }
+
+
         public void RemoveKey(string[] tuple) {
             List<string> eqJoinVars = new List<string>();
             foreach (string var in eqJoinHeader) {

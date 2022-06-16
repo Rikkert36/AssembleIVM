@@ -56,19 +56,19 @@ namespace AssembleIVM.T_reduct {
             } else {
                 delta = new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(new HashSet<GMRTuple>(), new HashSet<GMRTuple>());
             }
-            
+
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> unionDelta = FindUnionData(datasetUpdates, isUpdate);
             if (delta.Item1.Count > 0 || delta.Item2.Count > 0 ||
                 unionDelta.Item1.Count > 0 || unionDelta.Item2.Count > 0) {
                 Index outputDataset = FindOutputDataset(isUpdate);
-                datasetUpdates.Add(modelName, new Update() {
-                    projectedAddedTuples = delta.Item1.Union(unionDelta.Item1).ToHashSet(),
-                    projectedRemovedTuples = delta.Item2.Union(unionDelta.Item2).ToHashSet()
-                });
-                foreach (GMRTuple tuple in datasetUpdates[modelName].projectedAddedTuples) {
+                Update update = new Update(outputHeader, new List<string> { });
+                update.SetAddedTuples(delta.Item1.Union(unionDelta.Item1).ToHashSet());
+                update.SetRemovedTuples(delta.Item2.Union(unionDelta.Item2).ToHashSet());
+                datasetUpdates.Add(modelName, update);
+                foreach (GMRTuple tuple in datasetUpdates[modelName].GetAddedTuples()) {
                     AddTuple(outputDataset, tuple);
                 }
-                foreach (GMRTuple tuple in datasetUpdates[modelName].projectedRemovedTuples) {
+                foreach (GMRTuple tuple in datasetUpdates[modelName].GetRemovedTuples()) {
                     RemoveTuple(outputDataset, tuple);
                 }
 
@@ -82,14 +82,14 @@ namespace AssembleIVM.T_reduct {
             if (uniteWeekAndYearValues) {
                 int firstWeekIndex = Utils.GetWeekIndex(outputVariables);
                 return new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(
-                    Enumerate(root.delta.projectedAddedTuples, combinedHeader)
+                    Enumerate(root.delta.GetAddedTuples().ToHashSet(), combinedHeader)
                     .Select(tuple => tuple.UniteWeekAndYearValues(firstWeekIndex)).ToHashSet(),
-                    Enumerate(root.delta.projectedRemovedTuples, combinedHeader)
+                    Enumerate(root.delta.GetRemovedTuples().ToHashSet(), combinedHeader)
                     .Select(tuple => tuple.UniteWeekAndYearValues(firstWeekIndex)).ToHashSet());
             } else {
                 return new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(
-                    Enumerate(root.delta.projectedAddedTuples, combinedHeader).ToHashSet(),
-                    Enumerate(root.delta.projectedRemovedTuples, combinedHeader).ToHashSet());
+                    Enumerate(root.delta.GetAddedTuples().ToHashSet(), combinedHeader).ToHashSet(),
+                    Enumerate(root.delta.GetRemovedTuples().ToHashSet(), combinedHeader).ToHashSet());
             }
         }
 
@@ -252,8 +252,8 @@ namespace AssembleIVM.T_reduct {
             string location = @$"C:\Users\rmaas\Documents\Graduation project\code\QueryParser\QueryParser\data\input\";
             foreach (string dataset in unionData) {
                 if (datasetUpdates.ContainsKey(dataset)) {
-                    addDelta.UnionWith(datasetUpdates[dataset].projectedAddedTuples);
-                    removeDelta.UnionWith(datasetUpdates[dataset].projectedRemovedTuples);
+                    addDelta.UnionWith(datasetUpdates[dataset].GetAddedTuples());
+                    removeDelta.UnionWith(datasetUpdates[dataset].GetRemovedTuples());
                 } else {
                     addDelta.UnionWith(Utils.CSVToTupleSet(@$"{location}\{dataset}.txt", outputHeader));
                 }
@@ -266,31 +266,44 @@ namespace AssembleIVM.T_reduct {
             HashSet<GMRTuple> removeDelta = new HashSet<GMRTuple>();
             foreach (string dataset in unionData) {
                 if (datasetUpdates.ContainsKey(dataset)) {
-                    addDelta.UnionWith(datasetUpdates[dataset].projectedAddedTuples);
-                    removeDelta.UnionWith(datasetUpdates[dataset].projectedRemovedTuples);
-                } 
+                    addDelta.UnionWith(datasetUpdates[dataset].GetAddedTuples());
+                    removeDelta.UnionWith(datasetUpdates[dataset].GetRemovedTuples());
+                }
             }
             return new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(addDelta, removeDelta);
         }
-       
+
 
         private void InitLeafUpdates(Dictionary<string, Update> datasetUpdates) {
             string location = @$"C:\Users\rmaas\Documents\Graduation project\code\QueryParser\QueryParser\data\input\";
-
             foreach (LeafReduct leaf in leafs) {
+                List<GMRTuple> addedTuples;
+                List<GMRTuple> removedTuples;
                 if (datasetUpdates.ContainsKey(leaf.dataset)) {
-                    leaf.delta = datasetUpdates[leaf.dataset];
+                    addedTuples = datasetUpdates[leaf.dataset].GetAddedTuples().ToList();
+                    removedTuples = datasetUpdates[leaf.dataset].GetRemovedTuples().ToList();
+
                 } else {
-                    leaf.delta = new Update {
-                        projectedAddedTuples = Utils.CSVToTupleSet(@$"{location}\{leaf.dataset}.txt", leaf.variables),
-                        projectedRemovedTuples = new HashSet<GMRTuple>()
-                    };
+                    addedTuples = Utils.CSVToTupleSet(@$"{location}\{leaf.dataset}.txt", leaf.variables).ToList();
+                    removedTuples = new List<GMRTuple>();
                 }
                 if (splitWeekAndYearValues && Utils.HasWeekValue(leaf.variables)) {
-                    leaf.delta = leaf.delta.SplitWeekAndYearValues(Utils.GetWeekIndex(leaf.variables));
+                    SplitWeekAndYearValues(addedTuples, Utils.GetWeekIndex(leaf.variables));
+                    SplitWeekAndYearValues(removedTuples, Utils.GetWeekIndex(leaf.variables));
                 }
+                leaf.delta = new Update(leaf);
+                leaf.delta.SetAddedTuples(addedTuples);
+                leaf.delta.SetRemovedTuples(removedTuples);
+
             }
         }
+
+        public void SplitWeekAndYearValues(List<GMRTuple> tupleList, int weekIndex) {
+            for (int i = 0; i < tupleList.Count; i++) {
+                tupleList[i] = tupleList[i].SplitWeekAndYearValue(weekIndex);
+            }
+        }
+
 
         private void LoadLeafUpdates(Dictionary<string, Update> datasetUpdates) {
             foreach (LeafReduct leaf in leafs) {
@@ -374,9 +387,7 @@ namespace AssembleIVM.T_reduct {
         public void AddTuple(Index index, GMRTuple tuple) {
             List<GMRTuple> section = index.GetOrPlace(tuple.fields);
             GMRTuple t = index.FindTuple(tuple, section);
-            if (t != null) {
-                t.count = t.count; //Don't do anything
-            } else {
+            if (t == null) {
                 if (index.orderDimension.Equals("")) {
                     section.Add(tuple);
                 } else {

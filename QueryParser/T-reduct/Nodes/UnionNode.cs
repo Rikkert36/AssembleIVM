@@ -12,10 +12,10 @@ namespace AssembleIVM.T_reduct.Nodes {
         }
 
         public override void ComputeDelta(NodeReduct node) {
-            foreach(GMRTuple tuple in node.delta.projectedAddedTuples) {
+            foreach(GMRTuple tuple in node.delta.GetAddedTuples()) {
                 delta.unprojectedAddedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count) { fields = tuple.fields });
             }
-            foreach(GMRTuple tuple in node.delta.projectedRemovedTuples) {
+            foreach(GMRTuple tuple in node.delta.GetRemovedTuples()) {
                 delta.unprojectedRemovedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count) { fields = tuple.fields});
             }
         }
