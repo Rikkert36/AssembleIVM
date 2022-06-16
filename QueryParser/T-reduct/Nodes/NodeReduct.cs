@@ -14,6 +14,7 @@ namespace AssembleIVM.T_reduct {
         public string name;
         public Index index;
         public InnerNodeReduct parent;
+        public string orderDimension;
 
         public Update delta;
         private Enumerator enumerator;
@@ -24,6 +25,7 @@ namespace AssembleIVM.T_reduct {
             this.enumerator = enumerator;
             this.inFrontier = inFrontier;
             this.index = new Index(orderDimension);
+            this.orderDimension = orderDimension;
         }
 
         public List<string> CopyVars() {

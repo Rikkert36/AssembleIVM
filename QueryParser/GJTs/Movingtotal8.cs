@@ -39,7 +39,8 @@ namespace AssembleIVM.GJTs {
                 new List<TreeNode> { null, predicate },
                 new AggregateJoinEnumerator(),
                 "sum",
-                "b.hours"
+                "b.hours",
+                "a.week.w"
                 );
             return new GeneralJoinTree(
                 root,

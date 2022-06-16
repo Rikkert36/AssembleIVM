@@ -28,7 +28,7 @@ namespace QueryParser.NewParser {
             return Char.IsLetter(c);
         }
         private bool IsID(char c) {
-            return IsIdStart(c) || "-_'".IndexOf(c) >= 0 || IsDigit(c);
+            return IsIdStart(c) || "-_%'".IndexOf(c) >= 0 || IsDigit(c);
         }
         private bool IsArOp(char c) {
             return "+-/*".IndexOf(c) >= 0;

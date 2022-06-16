@@ -25,7 +25,7 @@ namespace AssembleIVM.GJTs {
                 new List<string> { "a.employee", "a.week"},
                 new List<GJTNode> { l1, l2 },
                 new List<TreeNode> { null, predicate},
-                new JoinEnumerator()
+                new SingleJoinEnumerator()
                 );
             l1.inFrontier = true;
             l2.inFrontier = true;

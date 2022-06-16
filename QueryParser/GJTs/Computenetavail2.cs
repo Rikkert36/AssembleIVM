@@ -47,18 +47,18 @@ namespace AssembleIVM.GJTs {
                     "i1",
                     vars4,
                     new List<GJTNode> { f1, f2 },
-                    new List<TreeNode> { null, predicate1 }, new JoinEnumerator());
+                    new List<TreeNode> { null, predicate1 }, new SingleJoinEnumerator());
             GJTInnerNode i2 = new GJTSingleJoinNode(
                 "i2",
                 vars4,
                 new List<GJTNode> { i1, f3 },
-                new List<TreeNode> { null, predicate2 }, new JoinEnumerator());
+                new List<TreeNode> { null, predicate2 }, new SingleJoinEnumerator());
             GJTInnerNode root = new GJTSingleJoinNode(
                 "vars4",
                 vars4,
                 new List<GJTNode> { i2, base4 },
                 new List<TreeNode> { null, new CartesianProduct() },
-                new JoinEnumerator());
+                new SingleJoinEnumerator());
 
             return new GeneralJoinTree(
                 root,

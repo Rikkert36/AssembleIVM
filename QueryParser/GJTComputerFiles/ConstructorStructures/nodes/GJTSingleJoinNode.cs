@@ -18,7 +18,7 @@ namespace AssembleIVM.GJTComputerFiles.ConstructorStructures {
                 reductChildren.Add(child.GenerateReduct(modelName));
 
             }
-            SingleJoinNode result = new SingleJoinNode(this.name, this.variables, reductChildren, this.predicates, this.enumerator, this.inFrontier);
+            SingleJoinNode result = new SingleJoinNode(this.name, this.variables, reductChildren, this.predicates, this.enumerator, this.inFrontier, this.orderDimension);
             enumerator.rho = result;
             foreach (NodeReduct child in result.children) {
                 child.SetParent(result);

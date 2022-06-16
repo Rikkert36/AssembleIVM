@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace AssembleIVM.T_reduct.Enumerators {
-    class JoinEnumerator : Enumerator {
+    class SingleJoinEnumerator : Enumerator {
         public override IEnumerable<List<string>> Enumerate(GMRTuple t) {
             JoinNode r = (JoinNode)rho;
             foreach (GMRTuple t1 in r.children[0].SemiJoin(new List<string>(rho.variables), t, r.predicates[0])) {

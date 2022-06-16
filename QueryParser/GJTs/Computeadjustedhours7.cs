@@ -30,13 +30,13 @@ namespace AssembleIVM.GJTs {
                 new List<string> { "a.fact", "a.week"},
                 new List<GJTNode> { l1, l2},
                 new List<TreeNode> { null, predicate},
-                new JoinEnumerator()
+                new SingleJoinEnumerator()
                 );
             return new GeneralJoinTree(
                 root,
                 new HashSet<GJTNode> { l1, l2},
                 new HashSet<GJTLeaf> { l1, l2},
-                new List<string> { "Fact", "Team", "Week", "Adjusted hours"},
+                new List<string> { "Fact", "Team", "Week", "Adjusted_hours"},
                 new List<string> { "a.fact", "team", "a.week", "int(hours * (1 + percentage))"},
                 new List<string> { }
                 );

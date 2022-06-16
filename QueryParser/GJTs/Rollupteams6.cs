@@ -31,7 +31,7 @@ namespace AssembleIVM.GJTs {
                 new List<string> { "a.team" },
                 new List<GJTNode> { l1, l2 },
                 new List<TreeNode> { null, predicate},
-                new JoinEnumerator()
+                new SingleJoinEnumerator()
                 );
             return new SpeedAggregateGeneralJoinTree(
                 root,

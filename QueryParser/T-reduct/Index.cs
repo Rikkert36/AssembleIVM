@@ -11,7 +11,7 @@ namespace AssembleIVM.T_reduct {
         public List<string> eqJoinHeader { get; set; }
         public string orderDimension;
         public Dictionary<string, List<GMRTuple>> tupleMap { get; set; }
-    
+
         public Index(string orderDimension) {
             this.orderDimension = orderDimension;
         }
@@ -78,11 +78,28 @@ namespace AssembleIVM.T_reduct {
         }*/
 
         public GMRTuple FindTuple(GMRTuple tuple, List<GMRTuple> section) {
-            foreach (GMRTuple otherTuple in section) {
-                if (otherTuple.Equals(tuple)) return otherTuple;
+            if (orderDimension.Equals("")) {
+                foreach (GMRTuple otherTuple in section) {
+                    if (otherTuple.Equals(tuple)) return otherTuple;
+                }
+            } else {
+                int orderDimensionLocation = header.IndexOf(orderDimension);
+                double x = int.Parse(tuple.fields[orderDimensionLocation]);
+                int L = 0;
+                int R = section.Count - 1;
+                while (L <= R) {
+                    int m = (L + R) / 2;
+                    if (int.Parse(section[m].fields[orderDimensionLocation]) < x) {
+                        L = m + 1;
+                    } else if (int.Parse(section[m].fields[orderDimensionLocation]) > x) {
+                        R = m - 1;
+                    } else {
+                        return section[m];
+                    }
+                }
             }
             return null;
-        }     
+        }
 
         public int FindLocation(List<GMRTuple> section, GMRTuple tuple) {
             /*int orderDimensionIndex = 0;
@@ -90,7 +107,7 @@ namespace AssembleIVM.T_reduct {
             int orderIndex = header.IndexOf(orderDimension);
             string orderValue = tuple.fields[orderIndex];
             for (int i = 0; i < section.Count; i++) {
-                if (Int32.Parse(orderValue) > Int32.Parse(section[i].fields[orderIndex])) {
+                if (Int32.Parse(orderValue) <= Int32.Parse(section[i].fields[orderIndex])) {
                     return i;
                 } else if (Int32.Parse(orderValue) == Int32.Parse(section[i].fields[orderIndex])) {
                     /*orderDimensionIndex++;
@@ -105,7 +122,7 @@ namespace AssembleIVM.T_reduct {
 
         private string TupleToString(List<string> tuple) {
             string result = "";
-            foreach(string s in tuple) {
+            foreach (string s in tuple) {
                 if (int.TryParse(s, out _) || double.TryParse(s, out _)) {
                     result += $"number({s})";
                 } else {

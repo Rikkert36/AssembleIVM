@@ -9,8 +9,8 @@ namespace AssembleIVM.T_reduct.Nodes {
         public string aggregateFunction;
         public string aggregateDimension;
         public AggregateJoinNode(string name, List<string> variables, List<NodeReduct> children, List<TreeNode> predicates,
-            Enumerator enumerator, bool inFrontier, string aggregateFunction, string aggregateDimension) :
-            base(name, variables, children, predicates, enumerator, inFrontier) {
+            Enumerator enumerator, bool inFrontier, string aggregateFunction, string aggregateDimension, string orderDimension = "") :
+            base(name, variables, children, predicates, enumerator, inFrontier, orderDimension) {
             this.aggregateFunction = aggregateFunction;
             this.aggregateDimension = aggregateDimension;
         }

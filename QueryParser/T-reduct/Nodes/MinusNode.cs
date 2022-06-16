@@ -14,24 +14,28 @@ namespace AssembleIVM.T_reduct.Nodes {
             if (node == children[0]) {
                 NodeReduct sibling = children[1];
                 foreach (GMRTuple tuple in node.delta.projectedAddedTuples) {
-                    if (!sibling.AnyJoin(new List<string>(variables), tuple, predicates[1])) {
-                        AddTuple(tuple);
+                    if (!sibling.AnyJoin(new List<string>(node.variables), tuple, predicates[1])) {
+                        delta.unprojectedAddedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count ) { fields = tuple.fields });
                     }
                 }
                 foreach (GMRTuple tuple in node.delta.projectedRemovedTuples) {
-                    RemoveTuple(tuple);
+                    if (!sibling.AnyJoin(new List<string>(node.variables), tuple, predicates[1])) {
+                        delta.unprojectedRemovedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count) { fields = tuple.fields });
+                    };
                 }
             } else {
                 NodeReduct sibling = children[0];
                 foreach (GMRTuple tuple in node.delta.projectedAddedTuples) {
-                    foreach (GMRTuple correspondingTuple in sibling.SemiJoin(new List<string>(variables), tuple, predicates[1])) {
-                        RemoveTuple(correspondingTuple);
+                    foreach (GMRTuple correspondingTuple in sibling.SemiJoin(new List<string>(node.variables), tuple, predicates[1])) {
+                        delta.unprojectedRemovedTuples.Add(new GMRTuple(correspondingTuple.fields.Length, correspondingTuple.count) { fields = correspondingTuple.fields });
+
                     }
                 }
                 foreach (GMRTuple tuple in node.delta.projectedRemovedTuples) {
-                    foreach (GMRTuple correspondingTuple in sibling.SemiJoin(new List<string>(variables), tuple, predicates[1])) {
+                    foreach (GMRTuple correspondingTuple in sibling.SemiJoin(new List<string>(node.variables), tuple, predicates[1])) {
                         if (!node.AnyJoin(new List<string>(variables), correspondingTuple, predicates[1])) {
-                            AddTuple(tuple);
+                            delta.unprojectedAddedTuples.Add(new GMRTuple(correspondingTuple.fields.Length, correspondingTuple.count) { fields = correspondingTuple.fields });
+
                         }
                     }
                 }
@@ -40,7 +44,7 @@ namespace AssembleIVM.T_reduct.Nodes {
         }
 
         public override List<string> RetrieveHeader() {
-            throw new NotImplementedException();
+            return new List<string> ( variables );
         }
 
         public override List<string> GetUnprojectHeader() {

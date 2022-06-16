@@ -20,7 +20,7 @@ namespace QueryParser.GJTComputerFiles.ConstructorStructures {
         }*/
 
         public override NodeReduct GenerateReduct(string modelName) {
-            LeafReduct result = new LeafReduct(this.name, this.variables, this.dataset, this.enumerator, this.inFrontier);
+            LeafReduct result = new LeafReduct(this.name, this.variables, this.dataset, this.enumerator, this.inFrontier, this.orderDimension);
             if (enumerator != null) enumerator.rho = result;
             return result;
         }

@@ -22,7 +22,7 @@ namespace QueryParser.NewParser.TreeNodes.Predicates {
             if (factorOperator.Equals("*")) {
                 return new Number(left.value * right.value);
             } else {
-                return new Number(left.value / right.value);
+                return new Number(Math.Round((double)left.value / right.value, 2));
             }
         }
 

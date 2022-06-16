@@ -240,7 +240,7 @@ namespace AssembleIVM.T_reduct {
             if (!leafs.Contains(nodeReduct)) {
                 InnerNodeReduct n = (InnerNodeReduct)nodeReduct;
                 foreach (NodeReduct child in n.children) {
-                    child.index = NewIndex(n, child);
+                    child.index = NewIndex(n, child, child.orderDimension);
                     InitIndices(child);
                 }
             }
@@ -260,8 +260,8 @@ namespace AssembleIVM.T_reduct {
             };
         }
 
-        private Index NewIndex(InnerNodeReduct parent, NodeReduct child) {
-            Index index = new Index(child.index.orderDimension) {
+        private Index NewIndex(InnerNodeReduct parent, NodeReduct child, string orderDimension) {
+            Index index = new Index(orderDimension) {
                 tupleMap = new Dictionary<string, List<GMRTuple>>(),
                 header = new List<string>(child.variables)
             };
@@ -269,8 +269,10 @@ namespace AssembleIVM.T_reduct {
             HashSet<string> allEquiVars = Utils.GetEquiVars(parent.predicates);
             //HashSet<string> allInEquiVars = Utils.GetInEquiVars(parent.predicates); //Not possible, because b.week.w and length then are both ordervalues
             allEquiVars.UnionWith(parent.variables);
-            HashSet<string> withoutInEquiVars = Utils.SetMinus(allEquiVars, new HashSet<string> { index.orderDimension });
-            index.eqJoinHeader = Utils.Intersect(childVars, withoutInEquiVars);
+            if (!index.orderDimension.Equals("")) {
+                allEquiVars = Utils.SetMinus(allEquiVars, new HashSet<string> { orderDimension });
+            }
+            index.eqJoinHeader = Utils.Intersect(childVars, allEquiVars);
             return index;
         }
 

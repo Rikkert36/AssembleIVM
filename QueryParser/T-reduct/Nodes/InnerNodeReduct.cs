@@ -15,8 +15,8 @@ namespace AssembleIVM {
         public List<TreeNode> predicates;
 
         public InnerNodeReduct(string name, List<string> variables,
-            List<NodeReduct> children, List<TreeNode> predicates, Enumerator enumerator, bool inFrontier) :
-            base(name, variables, enumerator, inFrontier) {
+            List<NodeReduct> children, List<TreeNode> predicates, Enumerator enumerator, bool inFrontier, string orderDimension = "") :
+            base(name, variables, enumerator, inFrontier, orderDimension) {
             this.children = children;
             this.predicates = predicates;
         }

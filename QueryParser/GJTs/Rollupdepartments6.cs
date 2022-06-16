@@ -37,7 +37,7 @@ namespace AssembleIVM.GJTs {
                 new List<string> { "fact", "week"},
                 new List<GJTNode> { aggregateNode, l2 },
                 new List<TreeNode> { null, new CartesianProduct()},
-                new JoinEnumerator()
+                new SingleJoinEnumerator()
                 );
             return new GeneralJoinTree(
                 root,

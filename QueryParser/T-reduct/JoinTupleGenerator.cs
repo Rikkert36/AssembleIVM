@@ -87,7 +87,7 @@ namespace AssembleIVM.T_reduct {
                 List<GMRTuple> section = index.Get(eqJoinTuples[i]);
                 if (rangeValues.Count == 0 || section.Count == 0) {
                     result.AddRange(section);
-                } else if (rangeValues[i].Length == 1) {
+                } else {
                     if (rangeValues[i][0] != null && rangeValues[i][1] != null) {
                         //Do a binary search and get tuples in range
                         Bound lowerBound = rangeValues[i][0];
@@ -96,31 +96,25 @@ namespace AssembleIVM.T_reduct {
                             upperBound.ViolatesTuple(section[0], index.header, orderDimension, false)) {
                             continue;
                         }
-                        HashSet<int> seenIndices = new HashSet<int>();
-                        bool nothingInRange = false;
-                        int j = section.Count / 2;
-                        while (true) {
-                            if (seenIndices.Contains(j)) {
-                                nothingInRange = true;
-                                break;
-                            }
-                            seenIndices.Add(j);
-                            if (lowerBound.ViolatesTuple(section[j], index.header, orderDimension, true)) {
-                                int dif = section.Count - j;
-                                int delta = ((section.Count - j) % 2 == 0) ? dif / 2 : dif / 2 + 1;
-                                j += delta;
-                            } else if (upperBound.ViolatesTuple(section[j], index.header, orderDimension, false)) {
-                                int delta = (j % 2 == 0) ? j / 2 : j / 2 + 1;
-                                j -= delta;
+                        int j = -1;
+                        int L = 0;
+                        int R = section.Count - 1;
+                        while (L <= R) {
+                            int m = (L + R) / 2;
+                            if (lowerBound.ViolatesTuple(section[m], index.header, orderDimension, true)) {
+                                L = m + 1;
+                            } else if (upperBound.ViolatesTuple(section[m], index.header, orderDimension, false)) {
+                                R = m - 1;
                             } else {
+                                j = m;
                                 break;
                             }
                         }
-                        if (nothingInRange) continue;
+                        if (j == -1) continue;
                         for (int k = j; k > -1 && !lowerBound.ViolatesTuple(section[k], index.header, orderDimension, true); k--) {
                             result.Add(section[k]);
                         }
-                        for (int l = j + 1; l < section.Count && !upperBound.ViolatesTuple(section[l], index.header, orderDimension, false); l--) {
+                        for (int l = j + 1; l < section.Count && !upperBound.ViolatesTuple(section[l], index.header, orderDimension, false); l++) {
                             result.Add(section[l]);
                         }
                     } else if (rangeValues[i][0] != null) {
@@ -137,8 +131,6 @@ namespace AssembleIVM.T_reduct {
                     } else {
                         throw new Exception("Range without lower-or-upperbound found");
                     }
-                } else {
-                    throw new Exception("Found predicate with > 1 range value, a corresponding-tuple finding algorithm for this case has yet to be implemented");
                 }
             }
             return result;

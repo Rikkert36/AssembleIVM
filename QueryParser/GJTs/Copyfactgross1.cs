@@ -24,7 +24,7 @@ namespace AssembleIVM.GJTs {
                 new List<string> { "DC005.employee", "DC005.week" },
                 new List<GJTNode> { l1, l2 },
                 new List<TreeNode> { null, new CartesianProduct()},
-                new JoinEnumerator()
+                new SingleJoinEnumerator()
                 );
 
             return new GeneralJoinTree(n1, new HashSet<GJTNode> { l1, l2 }, new HashSet<GJTLeaf> { l1, l2},

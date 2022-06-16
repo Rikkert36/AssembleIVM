@@ -19,13 +19,13 @@ namespace AssembleIVM.T_reduct {
             Number bound = node.ComputeValue(tupleHeader, tuple.fields);
             int index = tupleHeader.IndexOf(dimension);
             if (lower && isTight) {
-                return double.Parse(tuple.fields[index], CultureInfo.InvariantCulture) < bound.value;
-            } else if (lower && !isTight) {
                 return double.Parse(tuple.fields[index], CultureInfo.InvariantCulture) <= bound.value;
+            } else if (lower && !isTight) {
+                return double.Parse(tuple.fields[index], CultureInfo.InvariantCulture) < bound.value;
             } else if (!lower && isTight) {
-                return double.Parse(tuple.fields[index], CultureInfo.InvariantCulture) > bound.value;
-            } else {
                 return double.Parse(tuple.fields[index], CultureInfo.InvariantCulture) >= bound.value;
+            } else {
+                return double.Parse(tuple.fields[index], CultureInfo.InvariantCulture) > bound.value;
             }
         }
         

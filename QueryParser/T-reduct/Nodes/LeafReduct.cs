@@ -11,8 +11,8 @@ namespace AssembleIVM {
     class LeafReduct : NodeReduct {
         public string dataset;
 
-        public LeafReduct(string name, List<string> variables, string dataset, Enumerator enumerator, bool inFrontier) :
-            base(name, variables, enumerator, inFrontier) {
+        public LeafReduct(string name, List<string> variables, string dataset, Enumerator enumerator, bool inFrontier, string orderDimension) :
+            base(name, variables, enumerator, inFrontier, orderDimension) {
             this.dataset = dataset;
         }
 
