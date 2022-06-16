@@ -36,16 +36,29 @@ namespace QueryParser {
                 new Countemployeesperteam13(),
                 new Determineemptyteams14()
             };
-            foreach(ManualGJT sm in subModels) {
-                RunSubModel(sm, datasetUpdates);
+            datasetUpdates["DC001"] = new Update() {
+                projectedAddedTuples = new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "8" } } },
+                projectedRemovedTuples = new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "0" } } }
+            };
+            foreach (ManualGJT sm in subModels) {
+                UpdateSubModel(sm, datasetUpdates);
             }
         }
+
+        public static void UpdateSubModel(ManualGJT mgjt, Dictionary<string, Update> datasetUpdates) {           
+            string name = mgjt.GetName();
+            GeneralJoinTree gjt = mgjt.Construct();
+            ReductTree reduct = gjt.GenerateReduct(name);
+            reduct.RunModel(datasetUpdates, true, false, true);
+        }
+
+
 
         public static void RunSubModel(ManualGJT mgjt, Dictionary<string, Update> datasetUpdates) {
             string name = mgjt.GetName();
             GeneralJoinTree gjt = mgjt.Construct();
             ReductTree reduct = gjt.GenerateReduct(name);
-            reduct.RunModel(datasetUpdates, false, false, true);
+            reduct.RunModel(datasetUpdates, false, true, true);
         }
     }
 }

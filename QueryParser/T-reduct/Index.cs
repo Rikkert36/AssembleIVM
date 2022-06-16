@@ -6,7 +6,6 @@ using System.Text;
 namespace AssembleIVM.T_reduct {
     [Serializable]
     class Index {
-        public bool minusIndex = false;
         public List<string> header { get; set; }
         public List<string> eqJoinHeader { get; set; }
         public string orderDimension;
@@ -69,14 +68,6 @@ namespace AssembleIVM.T_reduct {
             return new JoinTupleGenerator(eqJoinHeader, orderDimension, rightHeader, rightTuple, predicate).DoesJoin(this);
         }
 
-        /*private Tuple<GMRTuple, bool> Contains(GMRTuple tuple) {
-            List<GMRTuple> section = Get(tuple.fields);
-            foreach (GMRTuple t in section) {
-                if (tuple.Equals(t)) return new Tuple<GMRTuple, bool>(t, true);
-            }
-            return new Tuple<GMRTuple, bool>(null, false);
-        }*/
-
         public GMRTuple FindTuple(GMRTuple tuple, List<GMRTuple> section) {
             if (orderDimension.Equals("")) {
                 foreach (GMRTuple otherTuple in section) {
@@ -84,40 +75,74 @@ namespace AssembleIVM.T_reduct {
                 }
             } else {
                 int orderDimensionLocation = header.IndexOf(orderDimension);
-                double x = int.Parse(tuple.fields[orderDimensionLocation]);
                 int L = 0;
                 int R = section.Count - 1;
-                while (L <= R) {
-                    int m = (L + R) / 2;
-                    if (int.Parse(section[m].fields[orderDimensionLocation]) < x) {
-                        L = m + 1;
-                    } else if (int.Parse(section[m].fields[orderDimensionLocation]) > x) {
-                        R = m - 1;
-                    } else {
-                        return section[m];
+                if (orderDimension.Equals("Week")) {
+                    int x = int.Parse(tuple.fields[orderDimensionLocation].Substring(1, 2));
+                    while (L <= R) {
+                        int m = (L + R) / 2;
+                        if (int.Parse(section[m].fields[orderDimensionLocation].Substring(1,2)) < x) {
+                            L = m + 1;
+                        } else if (int.Parse(section[m].fields[orderDimensionLocation].Substring(1,2)) > x) {
+                            R = m - 1;
+                        } else {
+                            return section[m];
+                        }
+                    }
+                } else {
+                    int x = int.Parse(tuple.fields[orderDimensionLocation]);
+                    while (L <= R) {
+                        int m = (L + R) / 2;
+                        if (int.Parse(section[m].fields[orderDimensionLocation]) < x) {
+                            L = m + 1;
+                        } else if (int.Parse(section[m].fields[orderDimensionLocation]) > x) {
+                            R = m - 1;
+                        } else {
+                            return section[m];
+                        }
                     }
                 }
+                
+                
             }
             return null;
         }
 
         public int FindLocation(List<GMRTuple> section, GMRTuple tuple) {
-            /*int orderDimensionIndex = 0;
-            string orderDimension = orderHeader[orderDimensionIndex];*/
-            int orderIndex = header.IndexOf(orderDimension);
-            string orderValue = tuple.fields[orderIndex];
-            for (int i = 0; i < section.Count; i++) {
-                if (Int32.Parse(orderValue) <= Int32.Parse(section[i].fields[orderIndex])) {
-                    return i;
-                } else if (Int32.Parse(orderValue) == Int32.Parse(section[i].fields[orderIndex])) {
-                    /*orderDimensionIndex++;
-                    orderDimension = orderHeader[orderDimensionIndex];
-                    orderIndex = header.IndexOf(orderDimension);
-                    orderValue = tuple.fields[orderIndex];*/
-                    return i;
+            int orderDimensionLocation = header.IndexOf(orderDimension);
+            int L = 0;
+            int R = section.Count - 1;
+            int result = -1;
+            if (orderDimension.Equals("Week")) {
+                int x = int.Parse(tuple.fields[orderDimensionLocation].Substring(1, 2));
+                while (L <= R) {
+                    int m = (L + R) / 2;
+                    if (int.Parse(section[m].fields[orderDimensionLocation].Substring(1, 2)) < x) {
+                        L = m + 1;
+                        result = L;
+                    } else if (int.Parse(section[m].fields[orderDimensionLocation].Substring(1, 2)) > x) {
+                        R = m - 1;
+                        result = R;
+                    } 
+                }
+            } else {
+                int x = int.Parse(tuple.fields[orderDimensionLocation]);
+                while (L <= R) {
+                    int m = (L + R) / 2;
+                    if (int.Parse(section[m].fields[orderDimensionLocation]) < x) {
+                        L = m + 1;
+                        result = L;
+                    } else if (int.Parse(section[m].fields[orderDimensionLocation]) > x) {
+                        R = m - 1;
+                        result = R;
+                    } 
                 }
             }
-            return section.Count;
+            if (result == R) {
+                return result + 1;
+            } else {
+                return result;
+            }
         }
 
         private string TupleToString(List<string> tuple) {

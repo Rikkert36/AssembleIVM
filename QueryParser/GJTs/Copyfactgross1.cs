@@ -29,7 +29,7 @@ namespace AssembleIVM.GJTs {
 
             return new GeneralJoinTree(n1, new HashSet<GJTNode> { l1, l2 }, new HashSet<GJTLeaf> { l1, l2},
                 new List<string> { "Employee", "Fact", "Week", "Hours"},
-                new List<string> {"DC005.employee;", "Factgross.fact", "DC005.week", "DC005.hours" },
+                new List<string> {"DC005.employee", "Factgross.fact", "DC005.week", "DC005.hours" },
                 new List<string> { "DC001" });
         }
 
