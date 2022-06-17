@@ -18,5 +18,41 @@ namespace AssembleIVM.T_reduct.Enumerators {
                 }
             }
         }
+
+        public override IEnumerable<List<string>> EnumerateAdded(GMRTuple t) {
+            UnionNode r = (UnionNode)rho;
+            if (r.children[0].delta != null) {
+                foreach (GMRTuple t1 in r.children[0].delta.SemiJoinAdded(new List<string>(rho.variables), t, r.predicates[0])) {
+                    foreach (List<string> s1 in r.children[0].EnumerateAdded(t1)) {
+                        yield return s1;
+                    }
+                }
+            }
+            if (r.children[1].delta != null) {
+                foreach (GMRTuple t2 in r.children[1].delta.SemiJoinAdded(new List<string>(rho.variables), t, r.predicates[1])) {
+                    foreach (List<string> s2 in r.children[1].EnumerateAdded(t2)) {
+                        yield return s2;
+                    }
+                }
+            }
+        }
+
+        public override IEnumerable<List<string>> EnumerateRemoved(GMRTuple t) {
+            UnionNode r = (UnionNode)rho;
+            if (r.children[0].delta != null) {
+                foreach (GMRTuple t1 in r.children[0].delta.SemiJoinRemoved(new List<string>(rho.variables), t, r.predicates[0])) {
+                    foreach (List<string> s1 in r.children[0].EnumerateRemoved(t1)) {
+                        yield return s1;
+                    }
+                }
+            }
+            if (r.children[1].delta != null) {
+                foreach (GMRTuple t2 in r.children[1].delta.SemiJoinRemoved(new List<string>(rho.variables), t, r.predicates[1])) {
+                    foreach (List<string> s2 in r.children[1].EnumerateRemoved(t2)) {
+                        yield return s2;
+                    }
+                }
+            }
+        }
     }
 }

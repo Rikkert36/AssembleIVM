@@ -53,6 +53,12 @@ namespace AssembleIVM.T_reduct {
         public IEnumerable<List<string>> Enumerate(GMRTuple t) {
             return enumerator.Enumerate(t);
         }
+        public IEnumerable<List<string>> EnumerateAdded(GMRTuple t) {
+            return enumerator.EnumerateAdded(t);
+        }
+        public IEnumerable<List<string>> EnumerateRemoved(GMRTuple t) {
+            return enumerator.EnumerateRemoved(t);
+        }
 
         public void Serialize(BinaryFormatter bf, FileStream fs) {
             bf.Serialize(fs, index);
@@ -87,10 +93,10 @@ namespace AssembleIVM.T_reduct {
         public GMRTuple AddTuple(GMRTuple tuple) {
             List<GMRTuple> section = index.GetOrPlace(tuple.fields);
             GMRTuple t = index.FindTuple(tuple, section);
-            if (t != null) {
+            if (t != null && t.Equals(tuple)) {
                 t.count += tuple.count;
                 return t;
-            } else {
+            }  else {
                 if (index.orderDimension.Equals("")) {
                     section.Add(tuple);
                 } else {

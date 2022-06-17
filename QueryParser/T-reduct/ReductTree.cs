@@ -40,6 +40,7 @@ namespace AssembleIVM.T_reduct {
         }
 
         public void RunModel(Dictionary<string, Update> datasetUpdates, bool isUpdate, bool saveTree, bool saveOutput) {
+            Timer.Start("Load indices and updates");
             if (!isUpdate) {
                 InitIndices(root);
                 InitLeafUpdates(datasetUpdates);
@@ -47,23 +48,34 @@ namespace AssembleIVM.T_reduct {
                 LoadIndices(root);
                 LoadLeafUpdates(datasetUpdates);
             }
+            Timer.Stop("Load indices and updates");
+            Timer.Start("Update");
             UpdateTree();
+            Timer.Stop("Update");
+
             if (saveTree) SaveIndices(root);
 
+            Timer.Start("Enumerate");
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta;
             if (root.delta != null) {
-                delta = Enumerate();
+                delta = EnumerateDelta();
             } else {
                 delta = new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(new HashSet<GMRTuple>(), new HashSet<GMRTuple>());
             }
+            Timer.Stop("Enumerate");
 
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> unionDelta = FindUnionData(datasetUpdates, isUpdate);
             if (delta.Item1.Count > 0 || delta.Item2.Count > 0 ||
                 unionDelta.Item1.Count > 0 || unionDelta.Item2.Count > 0) {
                 Index outputDataset = FindOutputDataset(isUpdate);
+
+                IEnumerable<GMRTuple> addedTuples = delta.Item1.Union(unionDelta.Item1).ToHashSet();
+                IEnumerable<GMRTuple> removedTuples = delta.Item2.Union(unionDelta.Item2).ToHashSet();
+
                 Update update = new Update(outputHeader, new List<string> { });
-                update.SetAddedTuples(delta.Item1.Union(unionDelta.Item1).ToHashSet());
-                update.SetRemovedTuples(delta.Item2.Union(unionDelta.Item2).ToHashSet());
+                update.SetAddedTuples(addedTuples);
+                update.SetRemovedTuples(removedTuples);
+
                 datasetUpdates.Add(modelName, update);
                 foreach (GMRTuple tuple in datasetUpdates[modelName].GetAddedTuples()) {
                     AddTuple(outputDataset, tuple);
@@ -74,22 +86,23 @@ namespace AssembleIVM.T_reduct {
 
                 if (saveTree) SaveOutputIndex(outputDataset);
                 if (saveOutput) SaveOutput(outputDataset);
+
             }
         }
 
-        private Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> Enumerate() {
+        private Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> EnumerateDelta() {
             List<string> combinedHeader = root.RetrieveHeader();
             if (uniteWeekAndYearValues) {
                 int firstWeekIndex = Utils.GetWeekIndex(outputVariables);
                 return new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(
-                    Enumerate(root.delta.GetAddedTuples().ToHashSet(), combinedHeader)
+                    EnumerateAdded(root.delta.GetAddedTuples().ToHashSet(), combinedHeader)
                     .Select(tuple => tuple.UniteWeekAndYearValues(firstWeekIndex)).ToHashSet(),
-                    Enumerate(root.delta.GetRemovedTuples().ToHashSet(), combinedHeader)
+                    EnumerateRemoved(root.delta.GetRemovedTuples().ToHashSet(), combinedHeader)
                     .Select(tuple => tuple.UniteWeekAndYearValues(firstWeekIndex)).ToHashSet());
             } else {
                 return new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(
-                    Enumerate(root.delta.GetAddedTuples().ToHashSet(), combinedHeader).ToHashSet(),
-                    Enumerate(root.delta.GetRemovedTuples().ToHashSet(), combinedHeader).ToHashSet());
+                    EnumerateAdded(root.delta.GetAddedTuples().ToHashSet(), combinedHeader).ToHashSet(),
+                    EnumerateRemoved(root.delta.GetRemovedTuples().ToHashSet(), combinedHeader).ToHashSet());
             }
         }
 
@@ -101,15 +114,36 @@ namespace AssembleIVM.T_reduct {
             }
         }
 
+        virtual protected IEnumerable<GMRTuple> EnumerateAdded(HashSet<GMRTuple> tupleList, List<string> combinedHeader) {
+            foreach (GMRTuple t in tupleList) {
+                foreach (List<string> s in root.EnumerateAdded(t)) {
+                    yield return CreateTuple(outputVariables, combinedHeader, s);
+                }
+            }
+        }
+
+        virtual protected IEnumerable<GMRTuple> EnumerateRemoved(HashSet<GMRTuple> tupleList, List<string> combinedHeader) {
+            foreach (GMRTuple t in tupleList) {
+                foreach (List<string> s in root.EnumerateRemoved(t)) {
+                    yield return CreateTuple(outputVariables, combinedHeader, s);
+                }
+            }
+        }
+
         private Index FindOutputDataset(bool isUpdate) {
             if (!isUpdate) {
                 List<string> eqJoinHeader;
                 if (this.GetType().Name.Equals("SpeedAggregateReductTree")) {
                     SpeedAggregateReductTree SART = (SpeedAggregateReductTree)this;
                     eqJoinHeader = new List<string>();
-                    foreach (string val in root.index.eqJoinHeader) {
-                        if (!val.Equals(SART.r1)) eqJoinHeader.Add(val);
+                    foreach (string val in root.index.header) {
+                        if (!val.Equals(SART.r1)) {
+                            eqJoinHeader.Add(val);
+                        } else {
+                            eqJoinHeader.Add(SART.r2);
+                                };
                     }
+                    eqJoinHeader.RemoveAt(eqJoinHeader.Count - 1);
                 } else {
                     eqJoinHeader = root.index.eqJoinHeader;
                 }
@@ -201,7 +235,6 @@ namespace AssembleIVM.T_reduct {
             using (FileStream fs = new FileStream(@$"{location}\outputINDEX.dat", FileMode.Open)) {
                 BinaryFormatter bf = new BinaryFormatter();
                 return (Index)bf.Deserialize(fs);
-
             }
         }
 
@@ -308,7 +341,11 @@ namespace AssembleIVM.T_reduct {
         private void LoadLeafUpdates(Dictionary<string, Update> datasetUpdates) {
             foreach (LeafReduct leaf in leafs) {
                 if (datasetUpdates.ContainsKey(leaf.dataset)) {
-                    leaf.delta = datasetUpdates[leaf.dataset];
+                    if (splitWeekAndYearValues && Utils.HasWeekValue(leaf.variables)) {
+                        leaf.delta = datasetUpdates[leaf.dataset].NewUpdate(leaf, true);
+                    } else {
+                        leaf.delta = datasetUpdates[leaf.dataset].NewUpdate(leaf, false);
+                    }
                 }
             }
         }

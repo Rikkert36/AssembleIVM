@@ -24,7 +24,8 @@ namespace QueryParser {
                 new Rollupdc001toyear3(),
                 new Fillinteams4(),
                 new Sumhoursperteam5(),
-                new Rollupteams6(),
+                new Fillindepartments6(),
+                new Sumhoursperdepartment6(),
                 new Rollupdepartments6(),
                 new Computeadjustedhours7(),
                 new DC002withYL8(),
@@ -36,29 +37,45 @@ namespace QueryParser {
                 new Countemployeesperteam13(),
                 new Determineemptyteams14()
             };
-            /*datasetUpdates["DC001"] = new Update() {
-                projectedAddedTuples = new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "8" } } },
-                projectedRemovedTuples = new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "0" } } }
-            };*/
+            datasetUpdates["DC001"] = new Update(new List<string> { "Employee", "Fact", "Week", "Hours" }, new List<string> { });
+            datasetUpdates["DC001"].SetAddedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "8" } } });
+            datasetUpdates["DC001"].SetRemovedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "0" } } });
             foreach (ManualGJT sm in subModels) {
-                RunSubModel(sm, datasetUpdates);
+                UpdateSubModel(sm, datasetUpdates);
             }
+            /*foreach(string s in datasetUpdates.Keys) {
+                Console.WriteLine($"{s}:\n");
+                Console.WriteLine($"added:");
+                foreach (GMRTuple t in datasetUpdates[s].GetAddedTuples()) {
+                    Console.WriteLine(t.GetString());
+                }
+                Console.WriteLine($"\nremoved:");
+                foreach (GMRTuple t in datasetUpdates[s].GetRemovedTuples()) {
+                    Console.WriteLine(t.GetString());
+                }
+                Console.Write("----------------------\n");
+            }*/
         }
 
         public static void UpdateSubModel(ManualGJT mgjt, Dictionary<string, Update> datasetUpdates) {           
             string name = mgjt.GetName();
+            Timer.Start(name);
             GeneralJoinTree gjt = mgjt.Construct();
             ReductTree reduct = gjt.GenerateReduct(name);
-            reduct.RunModel(datasetUpdates, true, false, true);
+            reduct.RunModel(datasetUpdates, true, false, false);
+            Timer.Stop(name);
         }
 
 
 
         public static void RunSubModel(ManualGJT mgjt, Dictionary<string, Update> datasetUpdates) {
-            string name = mgjt.GetName();
+            string name = mgjt.GetName();            
             GeneralJoinTree gjt = mgjt.Construct();
             ReductTree reduct = gjt.GenerateReduct(name);
+            Timer.Start(name);
             reduct.RunModel(datasetUpdates, false, true, true);
+            Timer.Stop(name);
+            Console.Write("----------------------\n");
         }
     }
 }

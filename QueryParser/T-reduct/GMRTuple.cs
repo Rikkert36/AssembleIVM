@@ -8,6 +8,7 @@ namespace AssembleIVM {
     class GMRTuple {
         public string[] fields;
         public int count;
+        public bool alreadyRemoved = false;
 
         public GMRTuple(int headerLength, int count) {
             fields = new string[headerLength];
@@ -63,5 +64,15 @@ namespace AssembleIVM {
                 fields = newFields.ToArray()
             };
         }
+    
+        public string GetString() {
+            string result = $"[{fields[0]}";
+            for (int i = 1; i < fields.Length; i++) {
+                result += $", {fields[i]}";
+            }
+            result += "]";
+            return result;
+        }
     }
+
 }

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace AssembleIVM.GJTs {
-    class Rollupteams6 : ManualGJT {
+    class QRollupteams6 : ManualGJT {
         public override GeneralJoinTree Construct() {
             GJTLeaf l1 = new GJTLeaf(
                 "l1",
@@ -47,7 +47,7 @@ namespace AssembleIVM.GJTs {
         }
 
         public override string GetName() {
-            return "rollupteams6";
+            return "Qrollupteams6";
         }
     }
 }

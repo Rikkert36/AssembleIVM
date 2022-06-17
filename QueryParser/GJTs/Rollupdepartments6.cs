@@ -14,7 +14,7 @@ namespace AssembleIVM.GJTs {
             GJTLeaf l1 = new GJTLeaf(
                 "l1",
                 new List<string>{"fact", "a.team", "week", "hours"},
-                "rollupteams6",
+                "sumhoursperdepartment6",
                 new FrontierEnumerator()
                 );
             GJTLeaf l2 = new GJTLeaf(
@@ -45,7 +45,7 @@ namespace AssembleIVM.GJTs {
                 new HashSet<GJTLeaf> { l1, l2 },
                 new List<string> { "Fact", "Team", "Week", "Hours"},
                 new List<string> { "fact", "b.team", "week", "sum(hours)"},
-                new List<string> { "sumhoursperteam5","rollupteams6" }
+                new List<string> { "sumhoursperteam5","sumhoursperdepartment6" }
                 );
         }
 
