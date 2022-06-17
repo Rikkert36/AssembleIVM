@@ -95,11 +95,7 @@ namespace AssembleIVM.T_reduct {
                         } else if (int.Parse(section[m].fields[orderDimensionLocation].Substring(1,2)) > x) {
                             R = m - 1;
                         } else {
-                            if (tuple.Equals(section[m]) || m == 0) {
-                                return section[m];
-                            } else {
-                                return section[m - 1];
-                            }
+                            return section[m];
                         }
                     }
                 } else {
@@ -111,11 +107,7 @@ namespace AssembleIVM.T_reduct {
                         } else if (int.Parse(section[m].fields[orderDimensionLocation]) > x) {
                             R = m - 1;
                         } else {
-                            if (tuple.Equals(section[m]) || m == 0) {
-                                return section[m];
-                            } else {
-                                return section[m - 1];
-                            }
+                            return section[m];
                         }
                     }
                 }
@@ -140,9 +132,7 @@ namespace AssembleIVM.T_reduct {
                     } else if (int.Parse(section[m].fields[orderDimensionLocation].Substring(1, 2)) > x) {
                         R = m - 1;
                         result = R;
-                    } else if (int.Parse(section[m].fields[orderDimensionLocation]) == x) {
-                        return m + 1;
-                    }
+                    } 
                 }
             } else {
                 int x = int.Parse(tuple.fields[orderDimensionLocation]);
@@ -154,9 +144,7 @@ namespace AssembleIVM.T_reduct {
                     } else if (int.Parse(section[m].fields[orderDimensionLocation]) > x) {
                         R = m - 1;
                         result = R;
-                    } else if (int.Parse(section[m].fields[orderDimensionLocation]) == x) {
-                        return m + 1;
-                    }
+                    } 
                 }
             }
             if (result == R) {

@@ -22,7 +22,7 @@ namespace AssembleIVM {
             }
             long totalDuration = durations[s];
             double seconds = (double)totalDuration / 1000;
-            //Console.WriteLine($"{s}: {seconds}");
+            Console.WriteLine($"{s}: {seconds}");
         }
 
         public static void Pause(string s) {

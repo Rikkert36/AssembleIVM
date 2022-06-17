@@ -40,15 +40,17 @@ namespace AssembleIVM.T_reduct {
         }
 
         public void RunModel(Dictionary<string, Update> datasetUpdates, bool isUpdate, bool saveTree, bool saveOutput) {
-            Timer.Start("Load indices and updates");
             if (!isUpdate) {
                 InitIndices(root);
                 InitLeafUpdates(datasetUpdates);
             } else {
+                Timer.Start("load indices");
                 LoadIndices(root);
+                Timer.Stop("load indices");
+                Timer.Start("load leaf updates");
                 LoadLeafUpdates(datasetUpdates);
+                Timer.Stop("load leaf updates");
             }
-            Timer.Stop("Load indices and updates");
             Timer.Start("Update");
             UpdateTree();
             Timer.Stop("Update");

@@ -82,12 +82,13 @@ namespace AssembleIVM.T_reduct {
         }
 
         public void ApplyUpdate() {
-            foreach (GMRTuple tuple in delta.GetAddedTuples()) { 
-                AddTuple(tuple);
-            }
             foreach (GMRTuple tuple in delta.GetRemovedTuples()) {
                 RemoveTuple(tuple);
             }
+            foreach (GMRTuple tuple in delta.GetAddedTuples()) { 
+                AddTuple(tuple);
+            }
+            
         }
 
         public GMRTuple AddTuple(GMRTuple tuple) {
