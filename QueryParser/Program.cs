@@ -85,7 +85,7 @@ namespace QueryParser {
             Timer.Start(name);
             GeneralJoinTree gjt = mgjt.Construct();
             ReductTree reduct = gjt.GenerateReduct(name);
-            reduct.RunModel(datasetUpdates, true, false, false);
+            reduct.UpdateModel(datasetUpdates, false, false);
             Timer.Stop(name);
         }
 
@@ -96,7 +96,7 @@ namespace QueryParser {
             GeneralJoinTree gjt = mgjt.Construct();
             ReductTree reduct = gjt.GenerateReduct(name);
             Timer.Start(name);
-            reduct.RunModel(datasetUpdates, false, true, true);
+            reduct.RunModel(datasetUpdates, true, true);
             Timer.Stop(name);
             Console.WriteLine("----------------------");
         }

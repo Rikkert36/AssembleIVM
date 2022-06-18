@@ -17,12 +17,41 @@ namespace AssembleIVM.T_reduct {
         }
 
 
-        protected override IEnumerable<GMRTuple> Enumerate(HashSet<GMRTuple> tupleList, List<string> combinedHeader) {
+        protected override IEnumerable<GMRTuple> Enumerate(InnerNodeReduct root, List<string> combinedHeader) {
             int aggregateDimensionIndex = combinedHeader.IndexOf(aggregateDimension);
             List<string> keyVariables = Utils.SetMinus(outputVariables, new List<string> { $"sum({aggregateDimension})" });
             Dictionary<string, Tuple<List<string>, Number>> valuePerReplaceDimension
                 = new Dictionary<string, Tuple<List<string>, Number>>();
-            
+            foreach (List<GMRTuple> tupleList in root.index.tupleMap.Values) {
+                foreach (GMRTuple t in tupleList) {
+                    foreach (List<string> s in root.Enumerate(t)) {
+                        GMRTuple keyTuple = CreateTuple(keyVariables, combinedHeader, s);
+                        string key = keyTuple.ToString();
+                        if (!valuePerReplaceDimension.ContainsKey(key)) {
+                            valuePerReplaceDimension.Add(key
+                                , new Tuple<List<string>, Number>
+                                (new List<string>(keyTuple.fields), new Number(s[aggregateDimensionIndex])));
+                        } else {
+                            Number oldValue = valuePerReplaceDimension[key].Item2;
+                            oldValue.value += new Number(s[aggregateDimensionIndex]).value;
+                        }
+                    }
+                }
+            }
+            foreach (Tuple<List<string>, Number> outputTuple in valuePerReplaceDimension.Values) {
+                string valueString = Convert.ToString(outputTuple.Item2.value);
+
+                yield return CreateTuple(outputVariables, outputVariables,
+                    Utils.Union(outputTuple.Item1, new List<string> { valueString })
+                    );
+            }
+        }
+
+        protected override IEnumerable<GMRTuple> EnumerateAdded(HashSet<GMRTuple> tupleList, List<string> combinedHeader) {
+            int aggregateDimensionIndex = combinedHeader.IndexOf(aggregateDimension);
+            List<string> keyVariables = Utils.SetMinus(outputVariables, new List<string> { $"sum({aggregateDimension})" });
+            Dictionary<string, Tuple<List<string>, Number>> valuePerReplaceDimension
+                = new Dictionary<string, Tuple<List<string>, Number>>();
             foreach (GMRTuple t in tupleList) {
                 foreach (List<string> s in root.Enumerate(t)) {
                     GMRTuple keyTuple = CreateTuple(keyVariables, combinedHeader, s);
@@ -37,6 +66,7 @@ namespace AssembleIVM.T_reduct {
                     }
                 }
             }
+
             foreach (Tuple<List<string>, Number> outputTuple in valuePerReplaceDimension.Values) {
                 string valueString = Convert.ToString(outputTuple.Item2.value);
 
@@ -44,10 +74,6 @@ namespace AssembleIVM.T_reduct {
                     Utils.Union(outputTuple.Item1, new List<string> { valueString })
                     );
             }
-        }
-
-        protected override IEnumerable<GMRTuple> EnumerateAdded(HashSet<GMRTuple> tupleList, List<string> combinedHeader) {
-            return Enumerate(tupleList, combinedHeader);
         }
 
         protected override IEnumerable<GMRTuple> EnumerateRemoved(HashSet<GMRTuple> tupleList, List<string> combinedHeader) {

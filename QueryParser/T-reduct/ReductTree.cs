@@ -39,37 +39,24 @@ namespace AssembleIVM.T_reduct {
             SetDeltasAndLevels(root, 0);
         }
 
-        public void RunModel(Dictionary<string, Update> datasetUpdates, bool isUpdate, bool saveTree, bool saveOutput) {
-            if (!isUpdate) {
-                InitIndices(root);
-                InitLeafUpdates(datasetUpdates);
-            } else {
-                Timer.Start("load indices");
-                LoadIndices(root);
-                Timer.Stop("load indices");
-                Timer.Start("load leaf updates");
-                LoadLeafUpdates(datasetUpdates);
-                Timer.Stop("load leaf updates");
-            }
-            Timer.Start("Update");
-            UpdateTree();
-            Timer.Stop("Update");
+        public void UpdateModel(Dictionary<string, Update> datasetUpdates, bool saveTree, bool saveOutput) {
+            LoadIndices(root);
+            LoadLeafUpdates(datasetUpdates);
 
+            UpdateTree();
             if (saveTree) SaveIndices(root);
 
-            Timer.Start("Enumerate");
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta;
             if (root.delta != null) {
                 delta = EnumerateDelta();
             } else {
                 delta = new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(new HashSet<GMRTuple>(), new HashSet<GMRTuple>());
             }
-            Timer.Stop("Enumerate");
 
-            Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> unionDelta = FindUnionData(datasetUpdates, isUpdate);
+            Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> unionDelta = GetUnionData(datasetUpdates);
             if (delta.Item1.Count > 0 || delta.Item2.Count > 0 ||
                 unionDelta.Item1.Count > 0 || unionDelta.Item2.Count > 0) {
-                Index outputDataset = FindOutputDataset(isUpdate);
+                Index outputDataset = GetOutputIndex();
 
                 IEnumerable<GMRTuple> addedTuples = delta.Item1.Union(unionDelta.Item1).ToHashSet();
                 IEnumerable<GMRTuple> removedTuples = delta.Item2.Union(unionDelta.Item2).ToHashSet();
@@ -92,6 +79,56 @@ namespace AssembleIVM.T_reduct {
             }
         }
 
+        public void RunModel(Dictionary<string, Update> datasetUpdates, bool saveTree, bool saveOutput) {
+            InitIndices(root);
+            InitLeafUpdates(datasetUpdates);
+
+            UpdateTree();
+            if (saveTree) SaveIndices(root);
+            
+            Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta = EnumerateDelta(); 
+
+            Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> unionDelta = LoadUnionData(datasetUpdates);
+            if (delta.Item1.Count > 0 || delta.Item2.Count > 0 ||
+                unionDelta.Item1.Count > 0 || unionDelta.Item2.Count > 0) {
+                Index outputDataset = FindOutputDataset();
+
+                IEnumerable<GMRTuple> addedTuples = delta.Item1.Union(unionDelta.Item1).ToHashSet();
+                IEnumerable<GMRTuple> removedTuples = delta.Item2.Union(unionDelta.Item2).ToHashSet();
+
+                Update update = new Update(outputHeader, new List<string> { });
+                update.SetAddedTuples(addedTuples);
+                update.SetRemovedTuples(removedTuples);
+
+                datasetUpdates.Add(modelName, update);
+                foreach (GMRTuple tuple in datasetUpdates[modelName].GetAddedTuples()) {
+                    AddTuple(outputDataset, tuple);
+                }
+                foreach (GMRTuple tuple in datasetUpdates[modelName].GetRemovedTuples()) {
+                    RemoveTuple(outputDataset, tuple);
+                }
+
+                if (saveTree) SaveOutputIndex(outputDataset);
+                if (saveOutput) SaveOutput(outputDataset);
+
+            }
+        }
+
+        private Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> EnumerateFullTree() {
+            List<string> combinedHeader = root.RetrieveHeader();
+            if (uniteWeekAndYearValues) {
+                int firstWeekIndex = Utils.GetWeekIndex(outputVariables);
+                return new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(
+                    Enumerate(root, combinedHeader)
+                    .Select(tuple => tuple.UniteWeekAndYearValues(firstWeekIndex)).ToHashSet(),
+                    new HashSet<GMRTuple>());
+            } else {
+                return new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(
+                    Enumerate(root, combinedHeader).ToHashSet(), 
+                    new HashSet<GMRTuple>());
+            }
+        }
+
         private Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> EnumerateDelta() {
             List<string> combinedHeader = root.RetrieveHeader();
             if (uniteWeekAndYearValues) {
@@ -108,10 +145,12 @@ namespace AssembleIVM.T_reduct {
             }
         }
 
-        virtual protected IEnumerable<GMRTuple> Enumerate(HashSet<GMRTuple> tupleList, List<string> combinedHeader) {
-            foreach (GMRTuple t in tupleList) {
-                foreach (List<string> s in root.Enumerate(t)) {
-                    yield return CreateTuple(outputVariables, combinedHeader, s);
+        virtual protected IEnumerable<GMRTuple> Enumerate(InnerNodeReduct root, List<string> combinedHeader) {
+            foreach (List<GMRTuple> tupleList in root.index.tupleMap.Values) {
+                foreach (GMRTuple t in tupleList) {
+                    foreach (List<string> s in root.Enumerate(t)) {
+                        yield return CreateTuple(outputVariables, combinedHeader, s);
+                    }
                 }
             }
         }
@@ -132,49 +171,38 @@ namespace AssembleIVM.T_reduct {
             }
         }
 
-        private Index FindOutputDataset(bool isUpdate) {
-            if (!isUpdate) {
-                List<string> eqJoinHeader;
-                if (this.GetType().Name.Equals("SpeedAggregateReductTree")) {
-                    SpeedAggregateReductTree SART = (SpeedAggregateReductTree)this;
-                    eqJoinHeader = new List<string>();
-                    foreach (string val in root.index.header) {
-                        if (!val.Equals(SART.r1)) {
-                            eqJoinHeader.Add(val);
-                        } else {
-                            eqJoinHeader.Add(SART.r2);
-                                };
-                    }
-                    eqJoinHeader.RemoveAt(eqJoinHeader.Count - 1);
-                } else {
-                    eqJoinHeader = root.index.eqJoinHeader;
+        private Index FindOutputDataset() {
+            List<string> eqJoinHeader;
+            if (this.GetType().Name.Equals("SpeedAggregateReductTree")) {
+                SpeedAggregateReductTree SART = (SpeedAggregateReductTree)this;
+                eqJoinHeader = new List<string>();
+                foreach (string val in root.index.header) {
+                    if (!val.Equals(SART.r1)) {
+                        eqJoinHeader.Add(val);
+                    } else {
+                        eqJoinHeader.Add(SART.r2);
+                    };
                 }
-                string newOrderDimension = root.orderDimension.Equals("") ? "" : outputHeader[outputVariables.IndexOf(root.orderDimension)];
-                List<string> newOutputVariables;
-                if (uniteWeekAndYearValues) {
-                    newOutputVariables = new List<string>();
-                    for (int i = 0; i < outputVariables.Count; i++) {
-                        if (!outputVariables[i].Contains("week.w")) newOutputVariables.Add(outputVariables[i]);
-                    }
-                } else {
-                    newOutputVariables = outputVariables;
-                }
-                return new Index(newOrderDimension) {
-                    tupleMap = new Dictionary<string, List<GMRTuple>>(),
-                    header = outputHeader,
-                    eqJoinHeader = eqJoinHeader.Select(val => outputHeader[newOutputVariables.IndexOf(val)]).ToList()
-                };
+                eqJoinHeader.RemoveAt(eqJoinHeader.Count - 1);
             } else {
-                return GetOutputIndex();
+                eqJoinHeader = root.index.eqJoinHeader;
             }
-        }
+            string newOrderDimension = root.orderDimension.Equals("") ? "" : outputHeader[outputVariables.IndexOf(root.orderDimension)];
+            List<string> newOutputVariables;
+            if (uniteWeekAndYearValues) {
+                newOutputVariables = new List<string>();
+                for (int i = 0; i < outputVariables.Count; i++) {
+                    if (!outputVariables[i].Contains("week.w")) newOutputVariables.Add(outputVariables[i]);
+                }
+            } else {
+                newOutputVariables = outputVariables;
+            }
+            return new Index(newOrderDimension) {
+                tupleMap = new Dictionary<string, List<GMRTuple>>(),
+                header = outputHeader,
+                eqJoinHeader = eqJoinHeader.Select(val => outputHeader[newOutputVariables.IndexOf(val)]).ToList()
+            };
 
-        private Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> FindUnionData(Dictionary<string, Update> datasetUpdates, bool isUpdate) {
-            if (!isUpdate) {
-                return LoadUnionData(datasetUpdates);
-            } else {
-                return GetUnionData(datasetUpdates);
-            }
         }
 
         protected GMRTuple CreateTuple(List<string> headerVariables, List<string> combinedHeader, List<string> variables) {
