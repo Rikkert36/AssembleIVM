@@ -33,7 +33,7 @@ namespace QueryParser {
             };
 
         static void Main(string[] args) {
-            UpdateModel();
+            RunModel();
             Console.WriteLine("done");
         }
 
@@ -75,8 +75,11 @@ namespace QueryParser {
 
         private static Update DC001Update() {
             Update result = new Update(new List<string> { "Employee", "Fact", "Week", "Hours" }, new List<string> { });
-            result.SetAddedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "8" } } });
-            result.SetRemovedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "0" } } });
+            /*result.SetAddedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "8" } } });
+            result.SetRemovedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "0" } } });*/
+            result.SetAddedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Anne", "holiday", "W52.2022", "8" } } });
+            result.SetRemovedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Anne", "holiday", "W52.2022", "0" } } });
+
             return result;
         }
 
