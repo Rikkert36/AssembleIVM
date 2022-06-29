@@ -27,7 +27,7 @@ namespace AssembleIVM.GJTs {
                 new List<string> { "a.team", "a.week"},
                 new List<GJTNode> { l1, l2},
                 new List<TreeNode> { null, ParsePredicate("a.team == b.team and a.week == b.week")},
-                new FrontierEnumerator()
+                new MinusEnumerator()
                 );
             l1.inFrontier = true;
             l2.inFrontier = true;

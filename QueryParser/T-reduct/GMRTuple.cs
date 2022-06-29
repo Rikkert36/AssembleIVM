@@ -8,7 +8,7 @@ namespace AssembleIVM {
     class GMRTuple {
         public string[] fields;
         public int count;
-        public bool alreadyRemoved = false;
+        public bool isPlusTuple = false;
 
         public GMRTuple(int headerLength, int count) {
             fields = new string[headerLength];

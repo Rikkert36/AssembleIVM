@@ -86,7 +86,7 @@ namespace AssembleIVM.T_reduct {
             UpdateTree();
             if (saveTree) SaveIndices(root);
             
-            Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta = EnumerateDelta(); 
+            Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta = EnumerateFullTree(); 
 
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> unionDelta = LoadUnionData(datasetUpdates);
             if (delta.Item1.Count > 0 || delta.Item2.Count > 0 ||

@@ -17,7 +17,7 @@ namespace AssembleIVM.GJTs {
                 );
             GJTLeaf l2 = new GJTLeaf("l2",
                 new List<string> { "b.employee", "b.week", "team"},
-                "r001",
+                "R001",
                 new FrontierEnumerator()
                 );
             TreeNode predicate = ParsePredicate("a.employee == b.employee and a.week == b.week");

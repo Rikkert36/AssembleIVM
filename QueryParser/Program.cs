@@ -33,7 +33,7 @@ namespace QueryParser {
             };
 
         static void Main(string[] args) {
-            RunModel();
+            UpdateModel();
             Console.WriteLine("done");
         }
 
@@ -69,7 +69,7 @@ namespace QueryParser {
 
         private static Dictionary<string, Update> DatasetUpdates() {
             Dictionary<string, Update> result = new Dictionary<string, Update>();
-            result["DC001"] = DC001Update();
+            result["R001"] = R001Update();
             return result;
         }
 
@@ -79,7 +79,15 @@ namespace QueryParser {
             result.SetRemovedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "0" } } });*/
             result.SetAddedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Anne", "holiday", "W52.2022", "8" } } });
             result.SetRemovedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Anne", "holiday", "W52.2022", "0" } } });
+            return result;
+        }
 
+        private static Update R001Update() {
+            Update result = new Update(new List<string> { "Employee", "Fact", "Week", "Hours" }, new List<string> { });
+            /*result.SetAddedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "8" } } });
+            result.SetRemovedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "0" } } });*/
+            result.SetAddedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Jochem", "W47.2023", "Dev1" } } });
+            result.SetRemovedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Jochem", "W47.2023", "Dev3" } } });
             return result;
         }
 

@@ -58,22 +58,33 @@ namespace AssembleIVM.T_reduct {
             }
             Dictionary<string, GMRTuple> addMap = new Dictionary<string, GMRTuple>();
             foreach (GMRTuple tuple in unprojectedAddedTuples) {
-                GMRTuple projectTuple = new GMRTuple(projectHeader.Count, tuple.count) {
-                    fields = projectIndices.Select(i => tuple.fields[i]).ToArray()
-                };
+                GMRTuple projectTuple;
+                if (tuple.fields.Length == unprojectHeader.Count) {
+                    projectTuple = new GMRTuple(projectHeader.Count, tuple.count) {
+                        fields = projectIndices.Select(i => tuple.fields[i]).ToArray()
+                    };
+                } else {
+                    projectTuple = tuple;
+                }
                 string key = projectTuple.ToString();
                 if (addMap.ContainsKey(key)) {
                     projectTuple = addMap[key];
-                    projectTuple.count += tuple.count;
+                    projectTuple.count += tuple.count;                   
                 } else {
                     addMap.Add(key, projectTuple);
                 }
+                if (tuple.isPlusTuple) projectTuple.isPlusTuple = true;
             }
             Dictionary<string, GMRTuple> remMap = new Dictionary<string, GMRTuple>();
             foreach (GMRTuple tuple in unprojectedRemovedTuples) {
-                GMRTuple projectTuple = new GMRTuple(projectHeader.Count, tuple.count) {
-                    fields = projectIndices.Select(i => tuple.fields[i]).ToArray()
-                };
+                GMRTuple projectTuple;
+                if (tuple.fields.Length == unprojectHeader.Count) {
+                    projectTuple = new GMRTuple(projectHeader.Count, tuple.count) {
+                        fields = projectIndices.Select(i => tuple.fields[i]).ToArray()
+                    };
+                } else {
+                    projectTuple = tuple;
+                }
                 string key = projectTuple.ToString();
                 if (remMap.ContainsKey(key)) {
                     projectTuple = remMap[key];
@@ -81,6 +92,7 @@ namespace AssembleIVM.T_reduct {
                 } else {
                     remMap.Add(key, projectTuple);
                 }
+                if (tuple.isPlusTuple) projectTuple.isPlusTuple = true;
             }
 
             foreach (GMRTuple tuple in addMap.Values) {

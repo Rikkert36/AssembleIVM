@@ -42,6 +42,10 @@ namespace AssembleIVM.T_reduct {
             this.parent = parent;
         }
 
+        public List<GMRTuple> Get(GMRTuple tuple) {
+            return index.Get(tuple.fields);
+        }
+
         public List<GMRTuple> SemiJoin(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
             return index.SemiJoin(rightHeader, rightTuple, predicate);
         }
@@ -77,7 +81,7 @@ namespace AssembleIVM.T_reduct {
             }
         }
 
-        public void ProjectUpdate() {
+        virtual public void ProjectUpdate() {
             this.delta.ProjectTuples(this.variables);
         }
 
@@ -91,12 +95,11 @@ namespace AssembleIVM.T_reduct {
             
         }
 
-        public GMRTuple AddTuple(GMRTuple tuple) {
+         public virtual void AddTuple(GMRTuple tuple) {
             List<GMRTuple> section = index.GetOrPlace(tuple.fields);
             GMRTuple t = index.FindTuple(tuple, section);
             if (t != null && t.Equals(tuple)) {
                 t.count += tuple.count;
-                return t;
             }  else {
                 if (index.orderDimension.Equals("")) {
                     section.Add(tuple);
@@ -104,7 +107,6 @@ namespace AssembleIVM.T_reduct {
                     int loc = index.FindLocation(section, tuple);
                     section.Insert(loc, tuple);
                 }
-                return tuple;
             }
         }
 
