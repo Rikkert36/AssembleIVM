@@ -129,7 +129,7 @@ namespace AssembleIVM.T_reduct {
             }
         }
 
-        private Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> EnumerateDelta() {
+        virtual protected Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> EnumerateDelta() {
             List<string> combinedHeader = root.RetrieveHeader();
             if (uniteWeekAndYearValues) {
                 int firstWeekIndex = Utils.GetWeekIndex(outputVariables);

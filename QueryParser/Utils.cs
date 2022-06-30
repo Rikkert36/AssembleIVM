@@ -5,6 +5,7 @@ using QueryParser.NewParser.TreeNodes.Predicates;
 using QueryParser.NewParser.TreeNodes.Terminals;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AssembleIVM {
@@ -74,6 +75,16 @@ namespace AssembleIVM {
             foreach (string s in t1) result.Add(s);
             foreach (string s in t2) result.Add(s);
             return result;
+        }
+
+        public static HashSet<GMRTuple> Union(IEnumerable<GMRTuple> l1, IEnumerable<GMRTuple> l2) {
+            HashSet<GMRTuple> result = l1.Select(t => t).ToHashSet();
+            HashSet<string> seen = l1.Select(t => t.GetString()).ToHashSet();
+            foreach (GMRTuple t in l2) {
+                if (!seen.Contains(t.GetString())) result.Add(t);
+            }
+            return result;
+            
         }
 
         private static string SimpleDimension(string s) {

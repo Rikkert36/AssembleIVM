@@ -85,6 +85,14 @@ namespace AssembleIVM.T_reduct {
             this.delta.ProjectTuples(this.variables);
         }
 
+        virtual public List<GMRTuple> SemiJoinAdded(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
+            return delta.SemiJoinAdded(rightHeader, rightTuple, predicate);
+        }
+
+        virtual public List<GMRTuple> SemiJoinRemoved(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
+            return delta.SemiJoinRemoved(rightHeader, rightTuple, predicate);
+        }
+
         public void ApplyUpdate() {
             foreach (GMRTuple tuple in delta.GetRemovedTuples()) {
                 RemoveTuple(tuple);

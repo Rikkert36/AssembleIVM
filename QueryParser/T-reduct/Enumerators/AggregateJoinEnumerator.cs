@@ -25,15 +25,18 @@ namespace AssembleIVM.T_reduct.Enumerators {
                     count++;
                 }
             }
-            //For now only return correct value for function == sum()
-            if (AN.aggregateFunction.Equals("sum")) {
-                yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(total.value) }));
-            } else if (AN.aggregateFunction.Equals("count")) {
-                yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(count) }));
-            } else if (AN.aggregateFunction.Equals("average")) {
-                yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(Math.Round(total.value / (double)count), 2) }));
-            } else {
-                throw new Exception($"Not implemented function {AN.aggregateFunction}");
+
+
+            if (count != 0) {
+                if (AN.aggregateFunction.Equals("sum")) {
+                    yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(total.value) }));
+                } else if (AN.aggregateFunction.Equals("count")) {
+                    yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(count) }));
+                } else if (AN.aggregateFunction.Equals("average")) {
+                    yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(Math.Round(total.value / (double)count), 2) }));
+                } else {
+                    throw new Exception($"Not implemented function {AN.aggregateFunction}");
+                }
             }
         }
 
@@ -42,6 +45,9 @@ namespace AssembleIVM.T_reduct.Enumerators {
         }
 
         public override IEnumerable<List<string>> EnumerateRemoved(GMRTuple t) {
+            if (t.GetString().Equals("[net availability, Dev1, 47, 2023]")) {
+                Console.WriteLine("hoi");
+            }
             AggregateJoinNode AN = (AggregateJoinNode)rho;
             Number total = new Number(0);
             int count = 0;
@@ -61,7 +67,7 @@ namespace AssembleIVM.T_reduct.Enumerators {
                 }
             }
             if (AN.children[1].delta != null) {
-                foreach (GMRTuple t2 in AN.children[1].delta.SemiJoinAdded(AN.variables, t, AN.predicates[1])) {
+                foreach (GMRTuple t2 in AN.children[1].SemiJoinAdded(AN.variables, t, AN.predicates[1])) {
                     foreach (List<string> s2 in AN.children[1].EnumerateAdded(t2)) {
                         if (AN.aggregateFunction.Equals("sum") || AN.aggregateFunction.Equals("average")) {
                             List<string> header = AN.children[0].RetrieveHeader();
@@ -74,7 +80,7 @@ namespace AssembleIVM.T_reduct.Enumerators {
                         count--;
                     }
                 }
-                foreach (GMRTuple t2 in AN.children[1].delta.SemiJoinRemoved(AN.variables, t, AN.predicates[1])) {
+                foreach (GMRTuple t2 in AN.children[1].SemiJoinRemoved(AN.variables, t, AN.predicates[1])) {
                     foreach (List<string> s2 in AN.children[1].EnumerateRemoved(t2)) {
                         if (AN.aggregateFunction.Equals("sum") || AN.aggregateFunction.Equals("average")) {
                             List<string> header = AN.children[1].RetrieveHeader();
@@ -88,15 +94,17 @@ namespace AssembleIVM.T_reduct.Enumerators {
                     }
                 }
             }
-            //For now only return correct value for function == sum()
-            if (AN.aggregateFunction.Equals("sum")) {
-                yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(total.value) }));
-            } else if (AN.aggregateFunction.Equals("count")) {
-                yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(count) }));
-            } else if (AN.aggregateFunction.Equals("average")) {
-                yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(Math.Round(total.value / (double)count), 2) }));
-            } else {
-                throw new Exception($"Not implemented function {AN.aggregateFunction}");
+
+            if (count != 0) {
+                if (AN.aggregateFunction.Equals("sum")) {
+                    yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(total.value) }));
+                } else if (AN.aggregateFunction.Equals("count")) {
+                    yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(count) }));
+                } else if (AN.aggregateFunction.Equals("average")) {
+                    yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(Math.Round(total.value / (double)count), 2) }));
+                } else {
+                    throw new Exception($"Not implemented function {AN.aggregateFunction}");
+                }
             }
         }
     }

@@ -53,14 +53,16 @@ namespace AssembleIVM.T_reduct.Enumerators {
                     count++;
                 }
             }
-            if (AN.aggregateFunction.Equals("sum")) {
-                yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(total.value) }));
-            } else if (AN.aggregateFunction.Equals("count")) {
-                yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(count) }));
-            } else if (AN.aggregateFunction.Equals("average")) {
-                yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(Math.Round(total.value / (double)count), 2) }));
-            } else {
-                throw new Exception($"Not implemented function {AN.aggregateFunction}");
+            if (count != 0) {
+                if (AN.aggregateFunction.Equals("sum")) {
+                    yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(total.value) }));
+                } else if (AN.aggregateFunction.Equals("count")) {
+                    yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(count) }));
+                } else if (AN.aggregateFunction.Equals("average")) {
+                    yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(Math.Round(total.value / (double)count), 2) }));
+                } else {
+                    throw new Exception($"Not implemented function {AN.aggregateFunction}");
+                }
             }
         }
 
@@ -83,7 +85,7 @@ namespace AssembleIVM.T_reduct.Enumerators {
                 }
             }
 
-            foreach (GMRTuple t1 in AN.children[0].delta.SemiJoinAdded(AN.variables, t, null)) {
+            foreach (GMRTuple t1 in AN.children[0].SemiJoinAdded(AN.variables, t, null)) {
                 foreach (List<string> s1 in AN.children[0].EnumerateAdded(t1)) {
                     if (AN.aggregateFunction.Equals("sum") || AN.aggregateFunction.Equals("average")) {
                         if (s1[i].Contains(".")) {
@@ -95,7 +97,7 @@ namespace AssembleIVM.T_reduct.Enumerators {
                     count--;
                 }
             }
-            foreach (GMRTuple t1 in AN.children[0].delta.SemiJoinRemoved(AN.variables, t, null)) {
+            foreach (GMRTuple t1 in AN.children[0].SemiJoinRemoved(AN.variables, t, null)) {
                 foreach (List<string> s1 in AN.children[0].EnumerateRemoved(t1)) {
                     if (AN.aggregateFunction.Equals("sum") || AN.aggregateFunction.Equals("average")) {
                         if (s1[i].Contains(".")) {
@@ -107,15 +109,16 @@ namespace AssembleIVM.T_reduct.Enumerators {
                     count++;
                 }
             }
-
-            if (AN.aggregateFunction.Equals("sum")) {
-                yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(total.value) }));
-            } else if (AN.aggregateFunction.Equals("count")) {
-                yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(count) }));
-            } else if (AN.aggregateFunction.Equals("average")) {
-                yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(Math.Round(total.value / (double)count), 2) }));
-            } else {
-                throw new Exception($"Not implemented function {AN.aggregateFunction}");
+            if (count != 0) {
+                if (AN.aggregateFunction.Equals("sum")) {
+                    yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(total.value) }));
+                } else if (AN.aggregateFunction.Equals("count")) {
+                    yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(count) }));
+                } else if (AN.aggregateFunction.Equals("average")) {
+                    yield return new List<string>(Utils.Union(t.fields, new string[] { Convert.ToString(Math.Round(total.value / (double)count), 2) }));
+                } else {
+                    throw new Exception($"Not implemented function {AN.aggregateFunction}");
+                }
             }
         }
     }

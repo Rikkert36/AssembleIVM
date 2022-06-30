@@ -2,6 +2,7 @@
 using QueryParser.NewParser.TreeNodes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AssembleIVM.T_reduct.Nodes {
@@ -23,6 +24,19 @@ namespace AssembleIVM.T_reduct.Nodes {
             foreach (GMRTuple tuple in node.delta.GetRemovedTuples()) {
                 delta.unprojectedRemovedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count) { fields = tuple.fields });
             }
+        }
+
+        public override void ProjectUpdate() {
+            base.ProjectUpdate();
+            delta.AddUnionTuples();
+        }
+
+        override public List<GMRTuple> SemiJoinAdded(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
+            return delta.SemiJoinUnion(rightHeader, rightTuple, predicate);
+        }
+
+        override public List<GMRTuple> SemiJoinRemoved(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
+            return delta.SemiJoinUnion(rightHeader, rightTuple, predicate);
         }
 
         public override List<string> RetrieveHeader() {

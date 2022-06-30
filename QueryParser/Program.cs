@@ -24,12 +24,12 @@ namespace QueryParser {
                 new Computeadjustedhours7(),
                 new DC002withYL8(),
                 new Movingtotal8(),
-                new Rollupdc002toyear9(),
+                /*new Rollupdc002toyear9(),
                 new Rollupdc007toyear10(),
                 new Computepercentagefacts11(),
                 new TeamrelationtoDC12(),
                 new Countemployeesperteam13(),
-                new Determineemptyteams14()
+                new Determineemptyteams14()*/
             };
 
         static void Main(string[] args) {
@@ -70,6 +70,7 @@ namespace QueryParser {
         private static Dictionary<string, Update> DatasetUpdates() {
             Dictionary<string, Update> result = new Dictionary<string, Update>();
             result["R001"] = R001Update();
+            //result["DC001"] = DC001Update();
             return result;
         }
 

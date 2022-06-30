@@ -1,4 +1,5 @@
-﻿using AssembleIVM.GJTComputerFiles.ConstructorStructures;
+﻿using AssembleIVM.GJTComputerFiles;
+using AssembleIVM.GJTComputerFiles.ConstructorStructures;
 using AssembleIVM.T_reduct.Enumerators;
 using QueryParser.GJTComputerFiles;
 using QueryParser.GJTComputerFiles.ConstructorStructures;
@@ -25,7 +26,7 @@ namespace AssembleIVM.GJTs {
                 "hours"
                 );
             base1.inFrontier = true;
-            return new GeneralJoinTree(
+            return new AggregateGJT(
                 root,
                 new HashSet<GJTNode> { base1 },
                 new HashSet<GJTLeaf> { base1 },

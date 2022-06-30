@@ -11,6 +11,7 @@ namespace AssembleIVM.T_reduct {
         public List<GMRTuple> unprojectedRemovedTuples;
         public Index projectedAddedTuples;
         public Index projectedRemovedTuples;
+        public Index projectedUnionTuples;
         //public HashSet<GMRTuple> appliedAddedTuples;
         //public HashSet<GMRTuple> appliedRemovedTuples;
 
@@ -69,7 +70,7 @@ namespace AssembleIVM.T_reduct {
                 string key = projectTuple.ToString();
                 if (addMap.ContainsKey(key)) {
                     projectTuple = addMap[key];
-                    projectTuple.count += tuple.count;                   
+                    projectTuple.count += tuple.count;
                 } else {
                     addMap.Add(key, projectTuple);
                 }
@@ -104,6 +105,18 @@ namespace AssembleIVM.T_reduct {
             }
         }
 
+        public void AddUnionTuples() {
+            projectedUnionTuples = new Index("") {
+                tupleMap = new Dictionary<string, List<GMRTuple>>(),
+                header = projectedAddedTuples.header,
+                eqJoinHeader = projectedAddedTuples.eqJoinHeader
+            }; 
+            foreach (GMRTuple t in Utils.Union(GetAddedTuples(), GetRemovedTuples())) {
+                AddUnionTuple(t);
+            }
+
+        }
+
         public void SetAddedTuples(IEnumerable<GMRTuple> tupleList) {
             foreach (GMRTuple tuple in tupleList) {
                 AddAddedTuple(tuple);
@@ -132,6 +145,14 @@ namespace AssembleIVM.T_reduct {
             }
         }
 
+        public IEnumerable<GMRTuple> GetUnionTuples() {
+            foreach (List<GMRTuple> tupleList in projectedUnionTuples.tupleMap.Values) {
+                foreach (GMRTuple tuple in tupleList) {
+                    yield return tuple;
+                }
+            }
+        }
+
         public List<GMRTuple> SemiJoinAdded(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
             return projectedAddedTuples.SemiJoin(rightHeader, rightTuple, predicate);
         }
@@ -140,7 +161,23 @@ namespace AssembleIVM.T_reduct {
             return projectedRemovedTuples.SemiJoin(rightHeader, rightTuple, predicate);
         }
 
-        public GMRTuple AddAddedTuple(GMRTuple tuple) {
+        public List<GMRTuple> SemiJoinUnion(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
+            return projectedUnionTuples.SemiJoin(rightHeader, rightTuple, predicate);
+        }
+
+        public void AddUnionTuple(GMRTuple tuple) {
+            List<GMRTuple> section = projectedUnionTuples.GetOrPlace(tuple.fields);
+
+            if (projectedUnionTuples.orderDimension.Equals("")) {
+                section.Add(tuple);
+            } else {
+                int loc = projectedUnionTuples.FindLocation(section, tuple);
+
+                section.Insert(loc, tuple);
+            }
+        }
+
+        public void AddAddedTuple(GMRTuple tuple) {
             List<GMRTuple> section = projectedAddedTuples.GetOrPlace(tuple.fields);
 
             if (projectedAddedTuples.orderDimension.Equals("")) {
@@ -150,11 +187,10 @@ namespace AssembleIVM.T_reduct {
 
                 section.Insert(loc, tuple);
             }
-            return tuple;
 
         }
 
-        public GMRTuple AddRemovedTuple(GMRTuple tuple) {
+        public void AddRemovedTuple(GMRTuple tuple) {
             List<GMRTuple> section = projectedRemovedTuples.GetOrPlace(tuple.fields);
 
             if (projectedRemovedTuples.orderDimension.Equals("")) {
@@ -163,7 +199,6 @@ namespace AssembleIVM.T_reduct {
                 int loc = projectedRemovedTuples.FindLocation(section, tuple);
                 section.Insert(loc, tuple);
             }
-            return tuple;
         }
 
     }

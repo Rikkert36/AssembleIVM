@@ -1,4 +1,5 @@
-﻿using AssembleIVM.GJTComputerFiles.ConstructorStructures;
+﻿using AssembleIVM.GJTComputerFiles;
+using AssembleIVM.GJTComputerFiles.ConstructorStructures;
 using AssembleIVM.T_reduct.Enumerators;
 using QueryParser.GJTComputerFiles;
 using QueryParser.GJTComputerFiles.ConstructorStructures;
@@ -26,7 +27,7 @@ namespace AssembleIVM.GJTs {
                 "count",
                 "employee"
                 );
-            return new GeneralJoinTree(
+            return new AggregateGJT(
                 root,
                 new HashSet<GJTNode> { leaf},
                 new HashSet<GJTLeaf> { leaf},

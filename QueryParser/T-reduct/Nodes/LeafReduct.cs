@@ -21,6 +21,10 @@ namespace AssembleIVM {
         }
 
         protected override void RemoveTuple(GMRTuple tuple) {
+            if (tuple.GetString().Equals("[net availability, Dev1, W47.2023, 16]")) {
+                Console.WriteLine("here");
+            }
+            string s = tuple.GetString();
             List<GMRTuple> section = index.Get(tuple.fields);
             GMRTuple t = index.FindTuple(tuple, section);
             t.count -= tuple.count;

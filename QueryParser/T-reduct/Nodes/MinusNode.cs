@@ -82,10 +82,10 @@ namespace AssembleIVM.T_reduct.Nodes {
             }
         }
 
-        public List<GMRTuple> Get(GMRTuple tuple) {
+/*        public List<GMRTuple> Get(GMRTuple tuple) {
             return index.Get(tuple.fields);
         }
-
+*/
         public bool ExistsAddedTuple(GMRTuple tuple) {
             return delta.projectedAddedTuples.Get(tuple.fields).Count > 0;
         }
