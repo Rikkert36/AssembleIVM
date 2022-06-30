@@ -39,18 +39,30 @@ namespace AssembleIVM.T_reduct {
             SetDeltasAndLevels(root, 0);
         }
 
-        public void UpdateModel(Dictionary<string, Update> datasetUpdates, bool saveTree, bool saveOutput) {
+        public void GetCurrentOutputSet(Dictionary<string, HashSet<string>> oldDatasetMap) {
+            Index outputDataset = GetOutputIndex();
+            HashSet<string> result = new HashSet<string>();
+            foreach (List<GMRTuple> tupleList in outputDataset.tupleMap.Values) {
+                foreach( GMRTuple tuple in tupleList) {
+                    result.Add(tuple.GetString());
+                }
+            }
+            oldDatasetMap.Add(modelName, result);
+        }
+
+        public void UpdateModel(Dictionary<string, Update> datasetUpdates, bool saveTree, bool saveOutput, bool enumerateDelta) {
             LoadIndices(root);
             LoadLeafUpdates(datasetUpdates);
 
             UpdateTree();
             if (saveTree) SaveIndices(root);
-            if (modelName.Equals("computepercentagefacts11")) {
-                Console.WriteLine("hoi");
-            }
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta;
             if (root.delta != null) {
-                delta = EnumerateDelta();
+                if (enumerateDelta) {
+                    delta = EnumerateDelta();
+                } else {
+                    delta = EnumerateFullTree();
+                }
             } else {
                 delta = new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(new HashSet<GMRTuple>(), new HashSet<GMRTuple>());
             }

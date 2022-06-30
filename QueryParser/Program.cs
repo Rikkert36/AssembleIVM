@@ -8,6 +8,7 @@ using QueryParser.NewParser.TreeNodes;
 using QueryParser.NewParser.TreeNodes.Predicates;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace QueryParser {
     class Program {
@@ -27,9 +28,9 @@ namespace QueryParser {
                 new Rollupdc002toyear9(),
                 new Rollupdc007toyear10(),
                 new Computepercentagefacts11(),
-                /*new TeamrelationtoDC12(),
+                new TeamrelationtoDC12(),
                 new Countemployeesperteam13(),
-                new Determineemptyteams14()*/
+                new Determineemptyteams14()
             };
 
         static void Main(string[] args) {
@@ -42,7 +43,23 @@ namespace QueryParser {
             foreach (ManualGJT sm in subModels) {
                 RunSubModel(sm, datasetUpdates);
             }
+        }
 
+        public static Dictionary<string, Tuple<HashSet<string>, HashSet<string>>> GetDeltas() {
+            Dictionary<string, Update> fullRunDatasetUpdates = DatasetUpdates();
+            Dictionary<string, HashSet<string>> oldDatasetValues = new Dictionary<string, HashSet<string>>();
+            Dictionary<string, Tuple<HashSet<string>, HashSet<string>>> result = new Dictionary<string, Tuple<HashSet<string>, HashSet<string>>>();
+            foreach (ManualGJT sm in subModels) {
+                UpdateSubModelByRunningFullTree(sm, fullRunDatasetUpdates, oldDatasetValues);
+                if (fullRunDatasetUpdates.ContainsKey(sm.GetName())) {
+                    HashSet<string> newSet = fullRunDatasetUpdates[sm.GetName()].GetAddedTuples().Select(tuple => tuple.GetString()).ToHashSet();
+                    HashSet<string> oldSet = oldDatasetValues[sm.GetName()];
+                    HashSet<string> added = new HashSet<string>(newSet.Except(oldSet));
+                    HashSet<string> removed = new HashSet<string>(oldSet.Except(newSet));
+                    result.Add(sm.GetName(), new Tuple<HashSet<string>, HashSet<string>>(added, removed));
+                }
+            }
+            return result;
         }
 
         public static void UpdateModel() {
@@ -89,7 +106,6 @@ namespace QueryParser {
             result.SetRemovedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Rik", "education", "W01.2022", "0" } } });*/
             result.SetAddedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Jochem", "W47.2023", "Dev1" } } });
             result.SetRemovedTuples(new HashSet<GMRTuple> { new GMRTuple(4, 1) { fields = new string[] { "Jochem", "W47.2023", "Dev3" } } });
-            return result;
         }
 
         public static void UpdateSubModel(ManualGJT mgjt, Dictionary<string, Update> datasetUpdates) {
@@ -97,7 +113,18 @@ namespace QueryParser {
             Timer.Start(name);
             GeneralJoinTree gjt = mgjt.Construct();
             ReductTree reduct = gjt.GenerateReduct(name);
-            reduct.UpdateModel(datasetUpdates, false, false);
+            reduct.UpdateModel(datasetUpdates, false, false, true);
+            Timer.Stop(name);
+        }
+
+        public static void UpdateSubModelByRunningFullTree(ManualGJT mgjt, Dictionary<string, Update> datasetUpdates,
+            Dictionary<string, HashSet<string>> oldDatasetValues) {
+            string name = mgjt.GetName();
+            Timer.Start(name);
+            GeneralJoinTree gjt = mgjt.Construct();
+            ReductTree reduct = gjt.GenerateReduct(name);
+            reduct.UpdateModel(datasetUpdates, false, false, false);
+            reduct.GetCurrentOutputSet(oldDatasetValues);
             Timer.Stop(name);
         }
 
