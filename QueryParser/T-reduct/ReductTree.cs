@@ -45,7 +45,9 @@ namespace AssembleIVM.T_reduct {
 
             UpdateTree();
             if (saveTree) SaveIndices(root);
-
+            if (modelName.Equals("computepercentagefacts11")) {
+                Console.WriteLine("hoi");
+            }
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta;
             if (root.delta != null) {
                 delta = EnumerateDelta();
@@ -165,6 +167,9 @@ namespace AssembleIVM.T_reduct {
 
         virtual protected IEnumerable<GMRTuple> EnumerateRemoved(HashSet<GMRTuple> tupleList, List<string> combinedHeader) {
             foreach (GMRTuple t in tupleList) {
+                if (t.GetString().Equals("[Dev3, W47.2023]")) {
+                    Console.WriteLine("hoi");
+                }
                 foreach (List<string> s in root.EnumerateRemoved(t)) {
                     yield return CreateTuple(outputVariables, combinedHeader, s);
                 }

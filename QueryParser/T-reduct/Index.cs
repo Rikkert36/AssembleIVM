@@ -33,6 +33,14 @@ namespace AssembleIVM.T_reduct {
             tupleMap.Remove(tupleString);
         }
 
+        private string GetKey(List<string> parentHeader, string[] tuple) {
+            List<string> eqJoinVars = new List<string>();
+            foreach (string var in eqJoinHeader) {
+                eqJoinVars.Add(tuple[parentHeader.IndexOf(var)]);
+            }
+            return TupleToString(eqJoinVars);
+        }
+
         private string GetKey(string[] tuple) {
             List<string> eqJoinVars = new List<string>();
             foreach (string var in eqJoinHeader) {
@@ -55,12 +63,27 @@ namespace AssembleIVM.T_reduct {
             return tupleMap[key];
         }
 
+        /*This method is now made such that it only returns one value, in general it should return a list,
+        but, since for the only aggregatejointree in this model this does not have to be, we do it like this*/ 
+        public List<GMRTuple> Get(List<string> header, GMRTuple tuple) {
+            string key = GetKey(header, tuple.fields);
+            if (!tupleMap.ContainsKey(key)) return new List<GMRTuple>();
+            List<GMRTuple> result = new List<GMRTuple>();
+            GMRTuple found = FindTuple(tuple, tupleMap[key]);
+            if (found != null) result.Add(found);
+            return result;
+        }
+
         public List<GMRTuple> GetOrPlace(string[] tuple) {
             string key = GetKey(tuple);
             if (!tupleMap.ContainsKey(key)) tupleMap[key] = new List<GMRTuple>();
             return tupleMap[key];
         }
 
+        //Only for aggregatejoinnode
+        public List<GMRTuple> SemiJoinLeftChild(List<string> parentHeader, GMRTuple tuple) {
+            return Get(parentHeader, tuple);
+        }
 
         public List<GMRTuple> SemiJoin(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
             if (predicate == null) {

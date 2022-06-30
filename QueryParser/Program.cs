@@ -24,10 +24,10 @@ namespace QueryParser {
                 new Computeadjustedhours7(),
                 new DC002withYL8(),
                 new Movingtotal8(),
-                /*new Rollupdc002toyear9(),
+                new Rollupdc002toyear9(),
                 new Rollupdc007toyear10(),
                 new Computepercentagefacts11(),
-                new TeamrelationtoDC12(),
+                /*new TeamrelationtoDC12(),
                 new Countemployeesperteam13(),
                 new Determineemptyteams14()*/
             };

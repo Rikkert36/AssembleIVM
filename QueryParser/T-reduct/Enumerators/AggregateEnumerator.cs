@@ -71,6 +71,7 @@ namespace AssembleIVM.T_reduct.Enumerators {
             Number total = new Number(0);
             int count = 0;
             List<string> header = AN.children[0].RetrieveHeader();
+
             int i = header.FindIndex(v => v.Equals(AN.aggregateDimension));
             foreach (GMRTuple t1 in AN.children[0].index.SemiJoin(AN.variables, t, null)) {
                 foreach (List<string> s1 in AN.children[0].Enumerate(t1)) {//Works only if children[0] is in frontier

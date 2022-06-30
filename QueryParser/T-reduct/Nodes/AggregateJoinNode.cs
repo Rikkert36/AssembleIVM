@@ -21,6 +21,17 @@ namespace AssembleIVM.T_reduct.Nodes {
             delta.AddUnionTuples();
         }
 
+        public List<GMRTuple> SemiJoinLeftChild(GMRTuple tuple) {
+            return children[0].index.SemiJoinLeftChild(this.variables, tuple);
+        }
+
+        public List<GMRTuple> SemiJoinLeftChildAdded(GMRTuple tuple) {
+            return children[0].delta.projectedAddedTuples.SemiJoinLeftChild(this.variables, tuple);
+        }
+        public List<GMRTuple> SemiJoinLeftChildRemoved(GMRTuple tuple) {
+            return children[0].delta.projectedRemovedTuples.SemiJoinLeftChild(this.variables, tuple);
+        }
+
         override public List<GMRTuple> SemiJoinAdded(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
             return delta.SemiJoinUnion(rightHeader, rightTuple, predicate);
         }
