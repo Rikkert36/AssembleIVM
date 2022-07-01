@@ -14,13 +14,13 @@ namespace AssembleIVM.GJTs {
                 "l1",
                 new List<string> {"a.team", "a.week"},
                 "TeamWeekCombos",
-                null
+                new FrontierEnumerator()
                 );
             GJTLeaf l2 = new GJTLeaf(
                 "l2",
                 new List<string> { "employee", "b.team", "b.week", "value" },
                 "teamrelationtoDC12",
-                null
+                new FrontierEnumerator()
                 );
             GJTInnerNode root = new GJTMinusNode(
                 "root",

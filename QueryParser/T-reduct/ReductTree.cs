@@ -43,26 +43,23 @@ namespace AssembleIVM.T_reduct {
             Index outputDataset = GetOutputIndex();
             HashSet<string> result = new HashSet<string>();
             foreach (List<GMRTuple> tupleList in outputDataset.tupleMap.Values) {
-                foreach( GMRTuple tuple in tupleList) {
+                foreach (GMRTuple tuple in tupleList) {
                     result.Add(tuple.GetString());
                 }
             }
             oldDatasetMap.Add(modelName, result);
         }
 
-        public void UpdateModel(Dictionary<string, Update> datasetUpdates, bool saveTree, bool saveOutput, bool enumerateDelta) {
+        public void UpdateModel(Dictionary<string, Update> datasetUpdates, bool saveTree, bool saveOutput) {
             LoadIndices(root);
             LoadLeafUpdates(datasetUpdates);
 
             UpdateTree();
+
             if (saveTree) SaveIndices(root);
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta;
             if (root.delta != null) {
-                if (enumerateDelta) {
-                    delta = EnumerateDelta();
-                } else {
-                    delta = EnumerateFullTree();
-                }
+                delta = EnumerateDelta();
             } else {
                 delta = new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(new HashSet<GMRTuple>(), new HashSet<GMRTuple>());
             }
@@ -98,9 +95,11 @@ namespace AssembleIVM.T_reduct {
             InitLeafUpdates(datasetUpdates);
 
             UpdateTree();
+
             if (saveTree) SaveIndices(root);
-            
-            Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta = EnumerateFullTree(); 
+
+
+            Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta = EnumerateFullTree();
 
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> unionDelta = LoadUnionData(datasetUpdates);
             if (delta.Item1.Count > 0 || delta.Item2.Count > 0 ||
@@ -128,6 +127,43 @@ namespace AssembleIVM.T_reduct {
             }
         }
 
+        public void RunFullModelWithSomeUpdates(Dictionary<string, Update> datasetUpdates, Dictionary<string, Update> extraUpdates, bool saveTree, bool saveOutput) {
+            InitIndices(root);
+            InitLeafUpdates(datasetUpdates);
+            ApplyExtraLeafUpdates(extraUpdates);
+
+            UpdateTree();
+
+            if (saveTree) SaveIndices(root);
+
+            Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta = EnumerateFullTree();
+
+            Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> unionDelta = LoadUnionData(datasetUpdates);
+            if (delta.Item1.Count > 0 || delta.Item2.Count > 0 ||
+                unionDelta.Item1.Count > 0 || unionDelta.Item2.Count > 0) {
+                Index outputDataset = FindOutputDataset();
+
+                IEnumerable<GMRTuple> addedTuples = delta.Item1.Union(unionDelta.Item1).ToHashSet();
+                IEnumerable<GMRTuple> removedTuples = delta.Item2.Union(unionDelta.Item2).ToHashSet();
+
+                Update update = new Update(outputHeader, new List<string> { });
+                update.SetAddedTuples(addedTuples);
+                update.SetRemovedTuples(removedTuples);
+                ApplyExtraOutputUpdates(update.projectedAddedTuples, extraUpdates);
+
+                datasetUpdates.Add(modelName, update);
+                foreach (GMRTuple tuple in datasetUpdates[modelName].GetAddedTuples()) {
+                    AddTuple(outputDataset, tuple);
+                }
+                foreach (GMRTuple tuple in datasetUpdates[modelName].GetRemovedTuples()) {
+                    RemoveTuple(outputDataset, tuple);
+                }
+                if (saveTree) SaveOutputIndex(outputDataset);
+                if (saveOutput) SaveOutput(outputDataset);
+
+            }
+        }
+
         private Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> EnumerateFullTree() {
             List<string> combinedHeader = root.RetrieveHeader();
             if (uniteWeekAndYearValues) {
@@ -138,7 +174,7 @@ namespace AssembleIVM.T_reduct {
                     new HashSet<GMRTuple>());
             } else {
                 return new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(
-                    Enumerate(root, combinedHeader).ToHashSet(), 
+                    Enumerate(root, combinedHeader).ToHashSet(),
                     new HashSet<GMRTuple>());
             }
         }
@@ -179,9 +215,6 @@ namespace AssembleIVM.T_reduct {
 
         virtual protected IEnumerable<GMRTuple> EnumerateRemoved(HashSet<GMRTuple> tupleList, List<string> combinedHeader) {
             foreach (GMRTuple t in tupleList) {
-                if (t.GetString().Equals("[Dev3, W47.2023]")) {
-                    Console.WriteLine("hoi");
-                }
                 foreach (List<string> s in root.EnumerateRemoved(t)) {
                     yield return CreateTuple(outputVariables, combinedHeader, s);
                 }
@@ -375,6 +408,33 @@ namespace AssembleIVM.T_reduct {
                 leaf.delta.SetAddedTuples(addedTuples);
                 leaf.delta.SetRemovedTuples(removedTuples);
 
+            }
+        }
+
+        private void ApplyExtraLeafUpdates(Dictionary<string, Update> extraUpdates) {
+            foreach(LeafReduct leaf in leafs) {
+                if (extraUpdates.ContainsKey(leaf.dataset)) {
+                    Index added = leaf.delta.projectedAddedTuples;
+                    foreach (GMRTuple t in extraUpdates[leaf.dataset].GetRemovedTuples()) {
+                        RemoveTuple(added, t);
+                    }
+                    foreach(GMRTuple t in extraUpdates[leaf.dataset].GetAddedTuples()) {
+                        AddTuple(added, t);
+                    }
+                }
+            }
+        }
+
+        private void ApplyExtraOutputUpdates(Index index, Dictionary<string, Update> extraUpdates) {
+            foreach(string dataset in unionData) {
+                if (extraUpdates.ContainsKey(dataset)) {
+                    foreach (GMRTuple t in extraUpdates[dataset].GetRemovedTuples()) {
+                        RemoveTuple(index, t);
+                    }
+                    foreach (GMRTuple t in extraUpdates[dataset].GetAddedTuples()) {
+                        AddTuple(index, t);
+                    }
+                }
             }
         }
 

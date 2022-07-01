@@ -153,6 +153,14 @@ namespace AssembleIVM.T_reduct {
             }
         }
 
+        public bool AnyJoinAdded(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
+            return projectedAddedTuples.AnyJoin(rightHeader, rightTuple, predicate);
+        }
+
+        public bool AnyJoinRemoved(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
+            return projectedRemovedTuples.AnyJoin(rightHeader, rightTuple, predicate);
+        }
+
         public List<GMRTuple> SemiJoinAdded(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
             return projectedAddedTuples.SemiJoin(rightHeader, rightTuple, predicate);
         }

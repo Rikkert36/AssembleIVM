@@ -39,7 +39,7 @@ namespace AssembleIVM.T_reduct {
             for (int i = 0; i < eqJoinTuples.Count; i++) {
                 List<GMRTuple> section = index.Get(eqJoinTuples[i]);
                 if (section.Count > 0) {
-                    if (rangeValues[i].Length == 0 || section.Count == 0) {
+                    if (rangeValues.Count == 0 || rangeValues[i].Length == 0 || section.Count == 0) {
                         return true;
                     } else if (rangeValues[i][0] != null && rangeValues[i][1] != null) {
                         Bound lowerBound = rangeValues[i][0];

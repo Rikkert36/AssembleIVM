@@ -50,8 +50,24 @@ namespace AssembleIVM.T_reduct {
             return index.SemiJoin(rightHeader, rightTuple, predicate);
         }
 
+        virtual public List<GMRTuple> SemiJoinAdded(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
+            return delta.SemiJoinAdded(rightHeader, rightTuple, predicate);
+        }
+
+        virtual public List<GMRTuple> SemiJoinRemoved(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
+            return delta.SemiJoinRemoved(rightHeader, rightTuple, predicate);
+        }
+
         public bool AnyJoin(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
             return index.AnyJoin(rightHeader, rightTuple, predicate);
+        }
+
+        public bool AnyJoinAdded(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
+            return delta.AnyJoinAdded(rightHeader, rightTuple, predicate);
+        }
+
+        public bool AnyJoinRemoved(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
+            return delta.AnyJoinRemoved(rightHeader, rightTuple, predicate);
         }
 
         public IEnumerable<List<string>> Enumerate(GMRTuple t) {
@@ -85,13 +101,7 @@ namespace AssembleIVM.T_reduct {
             this.delta.ProjectTuples(this.variables);
         }
 
-        virtual public List<GMRTuple> SemiJoinAdded(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
-            return delta.SemiJoinAdded(rightHeader, rightTuple, predicate);
-        }
 
-        virtual public List<GMRTuple> SemiJoinRemoved(List<string> rightHeader, GMRTuple rightTuple, TreeNode predicate) {
-            return delta.SemiJoinRemoved(rightHeader, rightTuple, predicate);
-        }
 
         public void ApplyUpdate() {
             foreach (GMRTuple tuple in delta.GetRemovedTuples()) {
