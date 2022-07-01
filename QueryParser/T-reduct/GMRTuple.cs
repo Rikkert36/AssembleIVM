@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AssembleIVM.T_reduct;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ namespace AssembleIVM {
         public string[] fields;
         public int count;
         public bool isPlusTuple = false;
+        public Number sum;
 
         public GMRTuple(int headerLength, int count) {
             fields = new string[headerLength];
@@ -26,6 +28,8 @@ namespace AssembleIVM {
             }
             return result;
         }
+
+
 
         public bool Equals(GMRTuple t) {
             if (fields.Length != t.fields.Length) return false;

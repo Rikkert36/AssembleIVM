@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Text;
 
 namespace AssembleIVM.T_reduct {
+    [Serializable]
     class Number {
         bool isInt;
         public dynamic value;

@@ -1,5 +1,6 @@
 ﻿using AssembleIVM.GJTComputerFiles;
 using AssembleIVM.GJTComputerFiles.ConstructorStructures;
+using AssembleIVM.GJTComputerFiles.ConstructorStructures.nodes;
 using AssembleIVM.T_reduct.Enumerators;
 using QueryParser.GJTComputerFiles;
 using QueryParser.GJTComputerFiles.ConstructorStructures;
@@ -18,12 +19,12 @@ namespace AssembleIVM.GJTs {
                 new FrontierEnumerator()
                 );
             leaf.inFrontier = true;
-            GJTInnerNode root = new GJTAggregateNode(
+            GJTInnerNode root = new GJTCountNode(
                 "root",
                 new List<string> { "team", "week"},
                 new List<GJTNode> { leaf },
                 new List<TreeNode> { null},
-                new AggregateEnumerator(),
+                new CountEnumerator(),
                 "count",
                 "employee"
                 );

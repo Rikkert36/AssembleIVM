@@ -26,7 +26,7 @@ namespace AssembleIVM.GJTs {
                 new List<string> { "A.a", "A.b" },
                 new List<GJTNode> { A, B },
                 new List<TreeNode> { null, predicate1}, null);
-            GJTInnerNode n3 = new GJTAggregateNode(
+            GJTInnerNode n3 = new GJTSumNode(
                  "n1",
                  new List<string> { "C.a", "C.b" },
                  new List<GJTNode> { C },

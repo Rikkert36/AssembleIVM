@@ -17,8 +17,51 @@ namespace AssembleIVM.T_reduct.Nodes {
         }
 
         public override void ProjectUpdate() {
-            base.ProjectUpdate();
+            delta.ProjectTuplesWithAggregateValue(this.variables);
             delta.AddUnionTuples();
+        }
+
+        public override void ComputeDelta(NodeReduct node) {
+            int i = children[0] == node ? 0 : 1;
+            int o = i == 0 ? 1 : 0;
+            NodeReduct sibling = children[o];
+             if (predicates[i] == null) {
+                int aggregateDimensionIndex = sibling.variables.IndexOf(aggregateDimension);
+                foreach (GMRTuple tuple in node.delta.GetAddedTuples()) {
+                    List<GMRTuple> correspondingTuples = sibling
+                        .SemiJoin(new List<string>(node.variables), tuple, predicates[o]);
+                    foreach (GMRTuple t in correspondingTuples) {
+                        delta.unprojectedAddedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count * t.count) 
+                        { fields = tuple.fields, sum = new Number(t.fields[aggregateDimensionIndex]) });
+                    }
+                }
+                foreach (GMRTuple tuple in node.delta.GetRemovedTuples()) {
+                    List<GMRTuple> correspondingTuples = sibling
+                        .SemiJoin(new List<string>(node.variables), tuple, predicates[o]);
+                    foreach (GMRTuple t in correspondingTuples) {
+                        delta.unprojectedRemovedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count * t.count)
+                        { fields = tuple.fields, sum = new Number(t.fields[aggregateDimensionIndex]) });
+                    }
+                }
+            } else {
+                int aggregateDimensionIndex = node.variables.IndexOf(aggregateDimension);
+                foreach (GMRTuple tuple in node.delta.GetAddedTuples()) {
+                    List<GMRTuple> correspondingTuples = sibling
+                        .SemiJoin(new List<string>(node.variables), tuple, predicates[i]);
+                    foreach (GMRTuple t in correspondingTuples) {
+                        delta.unprojectedAddedTuples.Add(new GMRTuple(t.fields.Length, tuple.count * t.count) 
+                        { fields = t.fields, sum = new Number(tuple.fields[aggregateDimensionIndex]) });
+                    }
+                }
+                foreach (GMRTuple tuple in node.delta.GetRemovedTuples()) {
+                    List<GMRTuple> correspondingTuples = sibling
+                        .SemiJoin(new List<string>(node.variables), tuple, predicates[i]);
+                    foreach (GMRTuple t in correspondingTuples) {
+                        delta.unprojectedRemovedTuples.Add(new GMRTuple(t.fields.Length, tuple.count * t.count)
+                        { fields = t.fields, sum = new Number(tuple.fields[aggregateDimensionIndex]) });
+                    }
+                }
+            }
         }
 
         public List<GMRTuple> SemiJoinLeftChild(GMRTuple tuple) {

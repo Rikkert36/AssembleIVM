@@ -1,4 +1,5 @@
 ﻿using AssembleIVM.QueryParser.TreeNodes.Terminals;
+using AssembleIVM.T_reduct;
 using Microsoft.VisualBasic.FileIO;
 using QueryParser.NewParser.TreeNodes;
 using QueryParser.NewParser.TreeNodes.Predicates;
@@ -78,13 +79,30 @@ namespace AssembleIVM {
         }
 
         public static HashSet<GMRTuple> Union(IEnumerable<GMRTuple> l1, IEnumerable<GMRTuple> l2) {
-            HashSet<GMRTuple> result = l1.Select(t => t).ToHashSet();
-            HashSet<string> seen = l1.Select(t => t.GetString()).ToHashSet();
-            foreach (GMRTuple t in l2) {
-                if (!seen.Contains(t.GetString())) result.Add(t);
+            Dictionary<string, GMRTuple> unionMap = new Dictionary<string, GMRTuple>();
+            foreach (GMRTuple t in l1) {
+                if (t.sum != null) {
+                    unionMap.Add(t.GetString(), new GMRTuple(t.fields.Length, t.count) 
+                    { fields = t.fields, sum = new Number(t.sum.value) });
+                } else {
+                    unionMap.Add(t.GetString(), new GMRTuple(t.fields.Length, t.count) { fields = t.fields });
+                }
             }
-            return result;
-            
+            foreach (GMRTuple t in l2) {
+                if (unionMap.ContainsKey(t.GetString())) {
+                    GMRTuple sameTuple = unionMap[t.GetString()];
+                    sameTuple.count -= t.count;
+                    if (t.sum != null)sameTuple.sum.value -= t.sum.value;
+                } else {
+                    if (t.sum != null) {
+                    unionMap.Add(t.GetString(), new GMRTuple(t.fields.Length, -t.count) 
+                    { fields = t.fields, sum = new Number(-t.sum.value) });
+                } else {
+                    unionMap.Add(t.GetString(), new GMRTuple(t.fields.Length, -t.count) { fields = t.fields });
+                }
+                }
+            }
+            return unionMap.Values.ToHashSet();      
         }
 
         private static string SimpleDimension(string s) {

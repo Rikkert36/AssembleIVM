@@ -91,8 +91,8 @@ namespace AssembleIVM.T_reduct {
 
         public void ComputeParentUpdate() {
             if (this.parent != null) {
-                if (parent.delta == null) parent.delta = 
-                        new Update(parent) { unprojectHeader = parent.GetUnprojectHeader()};
+                if (parent.delta == null) parent.delta =
+                        new Update(parent) { unprojectHeader = parent.GetUnprojectHeader() };
                 parent.ComputeDelta(this);
             }
         }
@@ -107,18 +107,18 @@ namespace AssembleIVM.T_reduct {
             foreach (GMRTuple tuple in delta.GetRemovedTuples()) {
                 RemoveTuple(tuple);
             }
-            foreach (GMRTuple tuple in delta.GetAddedTuples()) { 
+            foreach (GMRTuple tuple in delta.GetAddedTuples()) {
                 AddTuple(tuple);
             }
-            
+
         }
 
-         public virtual void AddTuple(GMRTuple tuple) {
+        public virtual void AddTuple(GMRTuple tuple) {
             List<GMRTuple> section = index.GetOrPlace(tuple.fields);
             GMRTuple t = index.FindTuple(tuple, section);
             if (t != null && t.Equals(tuple)) {
                 t.count += tuple.count;
-            }  else {
+            } else {
                 if (index.orderDimension.Equals("")) {
                     section.Add(tuple);
                 } else {

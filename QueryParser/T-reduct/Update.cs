@@ -62,7 +62,7 @@ namespace AssembleIVM.T_reduct {
                 GMRTuple projectTuple;
                 if (tuple.fields.Length == unprojectHeader.Count) {
                     projectTuple = new GMRTuple(projectHeader.Count, tuple.count) {
-                        fields = projectIndices.Select(i => tuple.fields[i]).ToArray()
+                        fields = projectIndices.Select(i => tuple.fields[i]).ToArray(),
                     };
                 } else {
                     projectTuple = tuple;
@@ -90,6 +90,64 @@ namespace AssembleIVM.T_reduct {
                 if (remMap.ContainsKey(key)) {
                     projectTuple = remMap[key];
                     projectTuple.count += tuple.count;
+                } else {
+                    remMap.Add(key, projectTuple);
+                }
+                if (tuple.isPlusTuple) projectTuple.isPlusTuple = true;
+            }
+
+            foreach (GMRTuple tuple in addMap.Values) {
+                AddAddedTuple(tuple);
+            }
+
+            foreach (GMRTuple tuple in remMap.Values) {
+                AddRemovedTuple(tuple);
+            }
+        }
+
+        public void ProjectTuplesWithAggregateValue(List<string> projectHeader) {
+            List<int> projectIndices = new List<int>();
+            foreach (string s in projectHeader) {
+                int i = unprojectHeader.IndexOf(s);
+                projectIndices.Add(i);
+            }
+            Dictionary<string, GMRTuple> addMap = new Dictionary<string, GMRTuple>();
+            foreach (GMRTuple tuple in unprojectedAddedTuples) {
+                GMRTuple projectTuple;
+                if (tuple.fields.Length == unprojectHeader.Count) {
+                    projectTuple = new GMRTuple(projectHeader.Count, tuple.count) {
+                        fields = projectIndices.Select(i => tuple.fields[i]).ToArray(),
+                        sum = new Number(tuple.sum.value)
+                    };
+                } else {
+                    projectTuple = tuple;
+                }
+                string key = projectTuple.ToString();
+                if (addMap.ContainsKey(key)) {
+                    projectTuple = addMap[key];
+                    projectTuple.count += tuple.count;
+                    projectTuple.sum.value += tuple.sum.value;
+                } else {
+                    addMap.Add(key, projectTuple);
+                }
+                if (tuple.isPlusTuple) projectTuple.isPlusTuple = true;
+            }
+            Dictionary<string, GMRTuple> remMap = new Dictionary<string, GMRTuple>();
+            foreach (GMRTuple tuple in unprojectedRemovedTuples) {
+                GMRTuple projectTuple;
+                if (tuple.fields.Length == unprojectHeader.Count) {
+                    projectTuple = new GMRTuple(projectHeader.Count, tuple.count) {
+                        fields = projectIndices.Select(i => tuple.fields[i]).ToArray(),
+                        sum = new Number(tuple.sum.value)
+                    };
+                } else {
+                    projectTuple = tuple;
+                }
+                string key = projectTuple.ToString();
+                if (remMap.ContainsKey(key)) {
+                    projectTuple = remMap[key];
+                    projectTuple.count += tuple.count;
+                    projectTuple.sum.value += tuple.sum.value;
                 } else {
                     remMap.Add(key, projectTuple);
                 }

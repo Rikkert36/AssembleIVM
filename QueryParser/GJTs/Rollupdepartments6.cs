@@ -23,12 +23,12 @@ namespace AssembleIVM.GJTs {
                 "Teamtotal",
                 new FrontierEnumerator()
                 );
-            GJTInnerNode aggregateNode = new GJTAggregateNode(
+            GJTInnerNode aggregateNode = new GJTSumNode(
                 "aggregate",
                 new List<string> { "fact", "week"},
                 new List<GJTNode> { l1 },
                 new List<TreeNode> { },
-                new AggregateEnumerator(),
+                new SumEnumerator(),
                 "sum",
                 "hours"
                 );

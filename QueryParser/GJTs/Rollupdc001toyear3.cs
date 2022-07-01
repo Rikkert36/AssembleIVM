@@ -16,12 +16,12 @@ namespace AssembleIVM.GJTs {
                 "computenetavail2",
                 new FrontierEnumerator()
                 );
-            GJTInnerNode root = new GJTAggregateNode(
+            GJTInnerNode root = new GJTSumNode(
                 "root",
                 new List<string> { "employee", "fact", "week.y" },
                 new List<GJTNode> { base1 },
                 new List<TreeNode> { null },
-                new AggregateEnumerator(),
+                new SumEnumerator(),
                 "sum",
                 "hours"
                 );

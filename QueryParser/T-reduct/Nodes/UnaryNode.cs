@@ -16,14 +16,6 @@ namespace AssembleIVM.T_reduct.Nodes {
             return new List<string>(children[0].variables);
         }
 
-        protected override void RemoveTuple(GMRTuple tuple) {
-            List<GMRTuple> section = index.Get(tuple.fields);
-            GMRTuple t = index.FindTuple(tuple, section);
-            t.count -= tuple.count;
-            if (t.count < 1) {
-                section.Remove(t);
-                if (section.Count == 0) index.RemoveKey(tuple.fields);
-            }
-        }
+        
     }
 }
