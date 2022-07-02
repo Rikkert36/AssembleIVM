@@ -103,7 +103,7 @@ namespace AssembleIVM.T_reduct {
 
 
 
-        public void ApplyUpdate() {
+        public virtual void ApplyUpdate() {
             foreach (GMRTuple tuple in delta.GetRemovedTuples()) {
                 RemoveTuple(tuple);
             }
@@ -129,6 +129,8 @@ namespace AssembleIVM.T_reduct {
         }
 
         abstract protected void RemoveTuple(GMRTuple deletion);
+
+
 
     }
 

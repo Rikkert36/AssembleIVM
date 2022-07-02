@@ -21,6 +21,32 @@ namespace AssembleIVM.T_reduct.Nodes {
             delta.AddUnionTuples();
         }
 
+        public override void ApplyUpdate() {
+            foreach (GMRTuple tuple in delta.GetUnionTuples()) {
+                AddUnionTuple(tuple);
+            }
+        }
+
+        public void AddUnionTuple(GMRTuple tuple) {
+            List<GMRTuple> section = index.GetOrPlace(tuple.fields);
+            GMRTuple t = index.FindTuple(tuple, section);
+            if (t != null && t.Equals(tuple)) {
+                t.count += tuple.count;
+                t.sum.value += tuple.sum.value;
+            } else {
+                if (index.orderDimension.Equals("")) {
+                    section.Add(tuple);
+                } else {
+                    int loc = index.FindLocation(section, tuple);
+                    section.Insert(loc, tuple);
+                }
+            }
+            if (t != null && t.count < 1) {
+                section.Remove(t);
+                if (section.Count == 0) index.RemoveKey(tuple.fields);
+            }
+        }
+
         public override void ComputeDelta(NodeReduct node) {
             int i = children[0] == node ? 0 : 1;
             int o = i == 0 ? 1 : 0;

@@ -8,10 +8,10 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace AssembleIVM.GJTComputerFiles.ConstructorStructures {
-    class GJTAggregateJoinNode : GJTJoinNode {
+    class GJTSumJoinNode : GJTJoinNode {
         public string aggregateFunction;
         public string aggregateDimension;
-        public GJTAggregateJoinNode(string name, List<string> variables, List<GJTNode> children, List<TreeNode> predicates, 
+        public GJTSumJoinNode(string name, List<string> variables, List<GJTNode> children, List<TreeNode> predicates, 
             Enumerator enumerator, string aggregateFunction, string aggregateDimension, string orderDimension = "") : 
             base(name, variables, children, predicates, enumerator, orderDimension) {
             this.aggregateFunction = aggregateFunction;

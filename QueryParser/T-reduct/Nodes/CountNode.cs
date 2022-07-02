@@ -8,17 +8,17 @@ namespace AssembleIVM.T_reduct.Nodes {
     class CountNode : UnaryNode {
         public string aggregateDimension;
         public CountNode(string name, List<string> variables, List<NodeReduct> children, List<TreeNode> predicates,
-            Enumerator enumerator, bool inFrontier,  string aggregateDimension) :
+            Enumerator enumerator, bool inFrontier, string aggregateDimension) :
             base(name, variables, children, predicates, enumerator, inFrontier) {
             this.aggregateDimension = aggregateDimension;
         }
 
         public override void ComputeDelta(NodeReduct node) {
             foreach (GMRTuple tuple in node.delta.GetAddedTuples()) {
-                delta.unprojectedAddedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count) { fields = tuple.fields});
+                delta.unprojectedAddedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count) { fields = tuple.fields });
             }
             foreach (GMRTuple tuple in node.delta.GetRemovedTuples()) {
-                delta.unprojectedRemovedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count) { fields = tuple.fields});
+                delta.unprojectedRemovedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count) { fields = tuple.fields });
             }
         }
 
@@ -27,7 +27,13 @@ namespace AssembleIVM.T_reduct.Nodes {
             delta.AddUnionTuples();
         }
 
-        public override void AddTuple(GMRTuple tuple) {
+        public override void ApplyUpdate() {
+            foreach (GMRTuple tuple in delta.GetUnionTuples()) {
+                AddUnionTuple(tuple);
+            }
+        }
+
+        public void AddUnionTuple(GMRTuple tuple) {
             List<GMRTuple> section = index.GetOrPlace(tuple.fields);
             GMRTuple t = index.FindTuple(tuple, section);
             if (t != null && t.Equals(tuple)) {
@@ -40,13 +46,7 @@ namespace AssembleIVM.T_reduct.Nodes {
                     section.Insert(loc, tuple);
                 }
             }
-        }
-
-        protected override void RemoveTuple(GMRTuple tuple) {
-            List<GMRTuple> section = index.Get(tuple.fields);
-            GMRTuple t = index.FindTuple(tuple, section);
-            t.count -= tuple.count;
-            if (t.count < 1) {
+            if (t != null && t.count < 1) {
                 section.Remove(t);
                 if (section.Count == 0) index.RemoveKey(tuple.fields);
             }
@@ -62,6 +62,11 @@ namespace AssembleIVM.T_reduct.Nodes {
 
         public override List<string> RetrieveHeader() {
             return Utils.Union(variables, new List<string> { $"count({aggregateDimension})" });
+        }
+
+        //Is also never used since RemoveTuple is only applied in ApplyUpdate(), but that is overwritten by a method that does not use RemoveTuple
+        protected override void RemoveTuple(GMRTuple deletion) {
+            throw new NotImplementedException();
         }
     }
 }

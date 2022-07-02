@@ -32,7 +32,6 @@ namespace AssembleIVM.GJTs {
                  new List<GJTNode> { C },
                  new List<TreeNode> { null},
                  null, 
-                 "sum",
                  "");
             GJTInnerNode n2 = new GJTSingleJoinNode(
                 "n2",

@@ -10,7 +10,7 @@ namespace AssembleIVM.T_reduct.Nodes {
         public string aggregateDimension;
 
         public SumNode(string name, List<string> variables, List<NodeReduct> children, List<TreeNode> predicates,
-            Enumerator enumerator, bool inFrontier, string aggregateFunction, string aggregateDimension) :
+            Enumerator enumerator, bool inFrontier, string aggregateDimension) :
             base(name, variables, children, predicates, enumerator, inFrontier) {
             this.aggregateDimension = aggregateDimension;
         }
@@ -30,7 +30,13 @@ namespace AssembleIVM.T_reduct.Nodes {
             delta.AddUnionTuples();
         }
 
-        public override void AddTuple(GMRTuple tuple) {
+        public override void ApplyUpdate() {
+            foreach (GMRTuple tuple in delta.GetUnionTuples()) {
+                AddUnionTuple(tuple);
+            }
+        }
+
+        public void AddUnionTuple(GMRTuple tuple) {
             List<GMRTuple> section = index.GetOrPlace(tuple.fields);
             GMRTuple t = index.FindTuple(tuple, section);
             if (t != null && t.Equals(tuple)) {
@@ -44,8 +50,13 @@ namespace AssembleIVM.T_reduct.Nodes {
                     section.Insert(loc, tuple);
                 }
             }
+            if (t != null && t.count < 1) {
+                section.Remove(t);
+                if (section.Count == 0) index.RemoveKey(tuple.fields);
+            }
         }
 
+        //Never used, but should be overwritten
         protected override void RemoveTuple(GMRTuple tuple) {
             List<GMRTuple> section = index.Get(tuple.fields);
             GMRTuple t = index.FindTuple(tuple, section);

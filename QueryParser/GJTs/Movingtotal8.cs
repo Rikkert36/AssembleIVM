@@ -33,12 +33,12 @@ namespace AssembleIVM.GJTs {
             (a.week.y == b.week.y + 1 and a.week.w + length - b.week.w >= 0
             and a.week.w + length - b.week.w < 5)
         )");
-            GJTInnerNode root = new GJTAggregateJoinNode(
+            GJTInnerNode root = new GJTSumJoinNode(
                 "root",
                 new List<string> { "a.fact", "a.team", "a.week.w", "a.week.y" },
                 new List<GJTNode> { l1, l2 },
                 new List<TreeNode> { null, predicate },
-                new AggregateJoinEnumerator(),
+                new SumJoinEnumerator(),
                 "sum",
                 "b.hours",
                 "a.week.w"

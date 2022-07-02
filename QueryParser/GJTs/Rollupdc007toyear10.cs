@@ -24,7 +24,6 @@ namespace AssembleIVM.GJTs {
                 new List<GJTNode> { l1 },
                 new List<TreeNode> { null },
                 new SumEnumerator(),
-                "sum",
                 "adjusted_hours"
                 );
             return new AggregateGJT(

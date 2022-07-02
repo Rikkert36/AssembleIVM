@@ -22,7 +22,6 @@ namespace AssembleIVM.GJTs {
                 new List<GJTNode> { base1 },
                 new List<TreeNode> { null },
                 new SumEnumerator(),
-                "sum",
                 "hours"
                 );
             base1.inFrontier = true;

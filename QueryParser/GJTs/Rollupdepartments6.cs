@@ -29,7 +29,6 @@ namespace AssembleIVM.GJTs {
                 new List<GJTNode> { l1 },
                 new List<TreeNode> { },
                 new SumEnumerator(),
-                "sum",
                 "hours"
                 );
             GJTInnerNode root = new GJTSingleJoinNode(

@@ -10,12 +10,10 @@ using System.Text;
 
 namespace AssembleIVM.GJTComputerFiles.ConstructorStructures {
     class GJTSumNode : GJTInnerNode {
-        string aggregateFunction;
         string aggregateDimension;
         public GJTSumNode(string name, List<string> variables, List<GJTNode> children, 
-            List<TreeNode> predicates, Enumerator enumerator, string aggregateFunction, string aggregateDimension) 
+            List<TreeNode> predicates, Enumerator enumerator, string aggregateDimension) 
             : base(name, variables, children, predicates, enumerator) {
-            this.aggregateFunction = aggregateFunction;
             this.aggregateDimension = aggregateDimension;
         }
     
@@ -27,7 +25,7 @@ namespace AssembleIVM.GJTComputerFiles.ConstructorStructures {
 
             }
             SumNode result = new SumNode(this.name, this.variables, reductChildren, this.predicates, 
-                this.enumerator, this.inFrontier, this.aggregateFunction, this.aggregateDimension);
+                this.enumerator, this.inFrontier, this.aggregateDimension);
             enumerator.rho = result;
             foreach (NodeReduct child in result.children) {
                 child.SetParent(result);

@@ -78,7 +78,9 @@ namespace AssembleIVM {
             return result;
         }
 
-        public static HashSet<GMRTuple> Union(IEnumerable<GMRTuple> l1, IEnumerable<GMRTuple> l2) {
+        public static HashSet<GMRTuple> Union(IEnumerable<GMRTuple> l1IE, IEnumerable<GMRTuple> l2IE) {
+            List<GMRTuple> l1 = l1IE.ToList();
+            List<GMRTuple> l2 = l2IE.ToList();
             Dictionary<string, GMRTuple> unionMap = new Dictionary<string, GMRTuple>();
             foreach (GMRTuple t in l1) {
                 if (t.sum != null) {
