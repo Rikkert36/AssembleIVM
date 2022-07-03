@@ -1,4 +1,5 @@
 ﻿using AssembleIVM.GJTComputerFiles.ConstructorStructures;
+using AssembleIVM.GJTComputerFiles.ConstructorStructures.nodes;
 using AssembleIVM.T_reduct.Enumerators;
 using QueryParser.GJTComputerFiles;
 using QueryParser.GJTComputerFiles.ConstructorStructures;
@@ -22,12 +23,12 @@ namespace AssembleIVM.GJTs {
                 "teamrelationtoDC12",
                 new FrontierEnumerator()
                 );
-            GJTInnerNode root = new GJTMinusNode(
+            GJTInnerNode root = new GJTQuickMinusNode(
                 "root",
                 new List<string> { "a.team", "a.week"},
                 new List<GJTNode> { l1, l2},
                 new List<TreeNode> { null, ParsePredicate("a.team == b.team and a.week == b.week")},
-                new MinusEnumerator()
+                new QuickMinusEnumerator()
                 );
             l1.inFrontier = true;
             l2.inFrontier = true;

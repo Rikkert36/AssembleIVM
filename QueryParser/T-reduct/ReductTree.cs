@@ -94,7 +94,7 @@ namespace AssembleIVM.T_reduct {
             InitIndices(root);
             InitLeafUpdates(datasetUpdates);
 
-            UpdateTree();
+            UpdateTreeInitial();
 
             if (saveTree) SaveIndices(root);
 
@@ -132,7 +132,7 @@ namespace AssembleIVM.T_reduct {
             InitLeafUpdates(datasetUpdates);
             ApplyExtraLeafUpdates(extraUpdates);
 
-            UpdateTree();
+            UpdateTreeInitial();
 
             if (saveTree) SaveIndices(root);
 
@@ -467,6 +467,21 @@ namespace AssembleIVM.T_reduct {
                     if (node.delta != null) {
                         node.ApplyUpdate();
                         if (node.delta != null && node != root) node.ComputeParentUpdate();
+                    }
+                }
+            }
+        }
+
+        private void UpdateTreeInitial() {
+            for (int i = nodesPerLevel.Count - 1; i > -1; i--) {
+                HashSet<NodeReduct> nodes = nodesPerLevel[i];
+                foreach (NodeReduct node in nodes) {
+                    if (node.delta != null && !node.GetType().Name.Equals("LeafReduct")) node.ProjectUpdate();
+                }
+                foreach (NodeReduct node in nodes) {
+                    if (node.delta != null) {
+                        node.ApplyUpdate();
+                        if (node.delta != null && node != root) node.ComputeParentUpdateInitial();
                     }
                 }
             }

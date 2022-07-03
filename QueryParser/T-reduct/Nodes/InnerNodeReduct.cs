@@ -25,5 +25,9 @@ namespace AssembleIVM {
 
         public abstract void ComputeDelta(NodeReduct node);
 
+        public virtual void ComputeDeltaInitial(NodeReduct node) {
+            ComputeDelta(node);
+        }
+
     }
 }

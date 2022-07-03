@@ -74,7 +74,7 @@ namespace AssembleIVM.T_reduct {
                 } else {
                     addMap.Add(key, projectTuple);
                 }
-                if (tuple.isPlusTuple) projectTuple.isPlusTuple = true;
+                //if (tuple.isPlusTuple) projectTuple.isPlusTuple = true;
             }
             Dictionary<string, GMRTuple> remMap = new Dictionary<string, GMRTuple>();
             foreach (GMRTuple tuple in unprojectedRemovedTuples) {
@@ -93,7 +93,7 @@ namespace AssembleIVM.T_reduct {
                 } else {
                     remMap.Add(key, projectTuple);
                 }
-                if (tuple.isPlusTuple) projectTuple.isPlusTuple = true;
+                //if (tuple.isPlusTuple) projectTuple.isPlusTuple = true;
             }
 
             foreach (GMRTuple tuple in addMap.Values) {

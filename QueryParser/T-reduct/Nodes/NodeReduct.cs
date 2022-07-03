@@ -97,6 +97,14 @@ namespace AssembleIVM.T_reduct {
             }
         }
 
+        public void ComputeParentUpdateInitial() {
+            if (this.parent != null) {
+                if (parent.delta == null) parent.delta =
+                        new Update(parent) { unprojectHeader = parent.GetUnprojectHeader() };
+                parent.ComputeDeltaInitial(this);
+            }
+        }
+
         virtual public void ProjectUpdate() {
             this.delta.ProjectTuples(this.variables);
         }

@@ -57,6 +57,12 @@ namespace AssembleIVM.T_reduct {
             return tupleMap.ContainsKey(GetKey(tuple));
         }
 
+        public GMRTuple GetTuple(GMRTuple tuple) {
+            List<GMRTuple> section = Get(tuple.fields);
+            if (section == null) return null;
+            return FindTuple(tuple, section);
+        }
+
         public List<GMRTuple> Get(string[] tuple) {
             string key = GetKey(tuple);
             if (!tupleMap.ContainsKey(key)) return new List<GMRTuple>();

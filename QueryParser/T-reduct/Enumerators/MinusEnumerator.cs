@@ -48,27 +48,27 @@ namespace AssembleIVM.T_reduct.Enumerators {
         public override IEnumerable<List<string>> EnumerateRemoved(GMRTuple t) {
             MinusNode minusNode = (MinusNode)rho;
             if (minusNode.children[1].delta != null) {
-                foreach (GMRTuple t1 in minusNode.children[0].SemiJoin(minusNode.variables, t, minusNode.predicates[0])) {
-                    foreach (List<string> s1 in minusNode.children[0].Enumerate(t1)) {
-                        int count = 0;
-                        bool minusPresent = false;
-                        foreach (GMRTuple t2 in minusNode.children[1].SemiJoin(minusNode.variables, t, minusNode.predicates[1])) {
-                            foreach (List<string> s2 in minusNode.children[1].Enumerate(t2)) {
-                                count++;
-                                minusPresent = true;
-                            }
-                        }
-                        foreach (GMRTuple t2 in minusNode.children[1].SemiJoinAdded(minusNode.variables, t, minusNode.predicates[1])) {
-                            foreach (List<string> s2 in minusNode.children[1].EnumerateAdded(t2)) {
-                                count--;
-                            }
-                        }
-                        foreach (GMRTuple t2 in minusNode.children[1].SemiJoinRemoved(minusNode.variables, t, minusNode.predicates[1])) {
-                            foreach (List<string> s2 in minusNode.children[1].EnumerateRemoved(t2)) {
-                                count++;
-                            }
-                        }
-                        if (count == 0 && minusPresent) {
+                int count = 0;
+                bool minusPresent = false;
+                foreach (GMRTuple t2 in minusNode.children[1].SemiJoin(minusNode.variables, t, minusNode.predicates[1])) {
+                    foreach (List<string> s2 in minusNode.children[1].Enumerate(t2)) {
+                        count++;
+                        minusPresent = true;
+                    }
+                }
+                foreach (GMRTuple t2 in minusNode.children[1].SemiJoinAdded(minusNode.variables, t, minusNode.predicates[1])) {
+                    foreach (List<string> s2 in minusNode.children[1].EnumerateAdded(t2)) {
+                        count--;
+                    }
+                }
+                foreach (GMRTuple t2 in minusNode.children[1].SemiJoinRemoved(minusNode.variables, t, minusNode.predicates[1])) {
+                    foreach (List<string> s2 in minusNode.children[1].EnumerateRemoved(t2)) {
+                        count++;
+                    }
+                }
+                if (count == 0 && minusPresent) {
+                    foreach (GMRTuple t1 in minusNode.children[0].SemiJoin(minusNode.variables, t, minusNode.predicates[0])) {
+                        foreach (List<string> s1 in minusNode.children[0].Enumerate(t1)) {
                             yield return s1;
                         }
                     }
@@ -77,9 +77,9 @@ namespace AssembleIVM.T_reduct.Enumerators {
             if (minusNode.children[0].delta != null) {
                 foreach (GMRTuple t1 in minusNode.children[0].SemiJoinRemoved(minusNode.variables, t, minusNode.predicates[0])) {
                     foreach (List<string> s1 in minusNode.children[0].EnumerateRemoved(t1)) {
-                        if (!minusNode.children[1].AnyJoin(minusNode.variables, t, minusNode.predicates[1])) {
+                        if (minusNode.children[1].delta == null && !minusNode.children[1].AnyJoin(minusNode.variables, t, minusNode.predicates[1])) {
                             yield return s1;
-                        } else if (minusNode.children[1].delta != null) {
+                        } else {
                             int count = 0;
                             foreach (GMRTuple t2 in minusNode.children[1].SemiJoin(minusNode.variables, t, minusNode.predicates[1])) {
                                 foreach (List<string> s2 in minusNode.children[1].Enumerate(t2)) {
