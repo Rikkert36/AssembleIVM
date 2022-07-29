@@ -172,7 +172,12 @@ namespace AssembleIVM.T_reduct {
             foreach (GMRTuple t in Utils.Union(GetAddedTuples(), GetRemovedTuples())) {
                 AddUnionTuple(t);
             }
+        }
 
+        public void AddMinusTuples() {
+            foreach (GMRTuple t in Utils.Minus(GetAddedTuples(), GetRemovedTuples())) {
+                AddUnionTuple(t);
+            }
         }
 
         public void SetAddedTuples(IEnumerable<GMRTuple> tupleList) {

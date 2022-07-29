@@ -34,8 +34,13 @@ namespace QueryParser {
             };
 
         static void Main(string[] args) {
-            AssertCorrectUpdates();
+            CompareTupleCount();
             Console.WriteLine("done");
+        }    
+
+        private static void CompareTupleCount() {
+            UpdateModel();
+            UpdateModelFullForest();
         }
 
         private static void AssertCorrectUpdates() {
@@ -106,6 +111,7 @@ namespace QueryParser {
             Dictionary<string, Update> extraUpdates = DatasetUpdates();
             Dictionary<string, HashSet<string>> oldDatasetValues = new Dictionary<string, HashSet<string>>();
             Dictionary<string, Tuple<HashSet<string>, HashSet<string>>> result = new Dictionary<string, Tuple<HashSet<string>, HashSet<string>>>();
+            TupleCounter.Push("Total run");
             foreach (ManualGJT sm in subModels) {
                 UpdateSubModelByRunningFullTree(sm, extraUpdates, fullRunDatasetUpdates, oldDatasetValues);
                 if (fullRunDatasetUpdates.ContainsKey(sm.GetName())) {
@@ -128,20 +134,19 @@ namespace QueryParser {
                     Console.Write("----------------------\n");
                 }
             }
+            TupleCounter.Pop("Total run");
             return result;
         }
 
         public static Dictionary<string, Update> UpdateModel() {
 
             Dictionary<string, Update> datasetUpdates = DatasetUpdates();
-
+            TupleCounter.Push("Total delta update");
             foreach (ManualGJT sm in subModels) {
-                Timer.Start(sm.GetName());
                 UpdateSubModel(sm, datasetUpdates);
-                Timer.Stop(sm.GetName());
-                Console.WriteLine("---------------------");
             }
-            foreach (string s in datasetUpdates.Keys) {
+            TupleCounter.Pop("Total delta update");
+            /*foreach (string s in datasetUpdates.Keys) {
                 Console.WriteLine($"{s}:\n");
                 Console.WriteLine($"added:");
                 foreach (GMRTuple t in datasetUpdates[s].GetAddedTuples()) {
@@ -152,8 +157,18 @@ namespace QueryParser {
                     Console.WriteLine(t.GetString());
                 }
                 Console.Write("----------------------\n");
-            }
+            }*/
             return datasetUpdates;
+        }
+
+        public static void UpdateModelFullForest() {
+            Dictionary<string, Update> fullRunDatasetUpdates = new Dictionary<string, Update>();
+            Dictionary<string, Update> datasetUpdates = DatasetUpdates();   
+            TupleCounter.Push("Total delta update");
+            foreach (ManualGJT sm in subModels) {
+                UpdateSubModelNoOutput(sm, datasetUpdates, fullRunDatasetUpdates);
+            }
+            TupleCounter.Pop("Total delta update");
         }
 
         private static bool IsEqual(Tuple<HashSet<string>, HashSet<string>> check, Tuple<HashSet<string>, HashSet<string>> correct) {
@@ -236,19 +251,29 @@ namespace QueryParser {
             string name = mgjt.GetName();
             GeneralJoinTree gjt = mgjt.Construct();
             ReductTree reduct = gjt.GenerateReduct(name);
+            TupleCounter.Push($"{name}");
             reduct.UpdateModel(datasetUpdates, false, false);
+            TupleCounter.Pop($"{name}");
         }
 
         public static void UpdateSubModelByRunningFullTree(ManualGJT mgjt, Dictionary<string, Update> extraUpdates,
             Dictionary<string, Update> datasetUpdates,
             Dictionary<string, HashSet<string>> oldDatasetValues) {
             string name = mgjt.GetName();
-            Timer.Start(name);
             GeneralJoinTree gjt = mgjt.Construct();
             ReductTree reduct = gjt.GenerateReduct(name);
             reduct.GetCurrentOutputSet(oldDatasetValues);
             reduct.RunFullModelWithSomeUpdates(datasetUpdates, extraUpdates, false, false);
-            Timer.Stop(name);
+        }
+
+        public static void UpdateSubModelNoOutput(ManualGJT mgjt, Dictionary<string, Update> extraUpdates,
+            Dictionary<string, Update> datasetUpdates) {
+            string name = mgjt.GetName();
+            GeneralJoinTree gjt = mgjt.Construct();
+            ReductTree reduct = gjt.GenerateReduct(name);
+            TupleCounter.Push($"{name}");
+            reduct.RunFullModelWithSomeUpdates(datasetUpdates, extraUpdates, false, false);
+            TupleCounter.Pop($"{name}");
         }
 
 
@@ -257,9 +282,7 @@ namespace QueryParser {
             string name = mgjt.GetName();
             GeneralJoinTree gjt = mgjt.Construct();
             ReductTree reduct = gjt.GenerateReduct(name);
-            Timer.Start(name);
             reduct.RunModel(datasetUpdates, true, true);
-            Timer.Stop(name);
             Console.WriteLine("----------------------");
         }
     }

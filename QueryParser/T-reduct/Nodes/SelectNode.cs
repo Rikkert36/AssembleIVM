@@ -11,11 +11,13 @@ namespace AssembleIVM.T_reduct.Nodes {
 
         public override void ComputeDelta(NodeReduct node) {
             foreach (GMRTuple tuple in node.delta.GetAddedTuples()) {
+                TupleCounter.Increment();
                 if (new PredicateTupleEvaluator().Evaluate(new List<string>(node.variables), tuple, predicates[0])) {
                     delta.unprojectedAddedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count) { fields = tuple.fields });
                 }
             }
             foreach (GMRTuple tuple in node.delta.GetRemovedTuples()) {
+                TupleCounter.Increment();
                 if (new PredicateTupleEvaluator().Evaluate(new List<string>(node.variables), tuple, predicates[0])) {
                     delta.unprojectedRemovedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count) { fields = tuple.fields });
                 }

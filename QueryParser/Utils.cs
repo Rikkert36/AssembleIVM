@@ -64,6 +64,17 @@ namespace AssembleIVM {
             return result;
         }
 
+        public static HashSet<GMRTuple> Minus(IEnumerable<GMRTuple> l1IE, IEnumerable<GMRTuple> l2IE) {
+            HashSet<string> minusString = l2IE.Select(tuple => tuple.GetString()).ToHashSet();
+            HashSet<GMRTuple> result = new HashSet<GMRTuple>();
+            foreach(GMRTuple t in l1IE) {
+                if (!minusString.Contains(t.GetString())) {
+                    result.Add(t);
+                }
+            }
+            return result;
+        }
+
         public static List<string> Union(List<string> t1, List<string> t2) {
             List<string> result = new List<string>();
             foreach (string s in t1) result.Add(s);

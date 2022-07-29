@@ -57,6 +57,7 @@ namespace AssembleIVM.T_reduct.Nodes {
                     List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[o]);
                     foreach (GMRTuple t in correspondingTuples) {
+                        TupleCounter.Increment();
                         delta.unprojectedAddedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count * t.count) 
                         { fields = tuple.fields, sum = new Number(t.fields[aggregateDimensionIndex]) });
                     }
@@ -65,6 +66,7 @@ namespace AssembleIVM.T_reduct.Nodes {
                     List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[o]);
                     foreach (GMRTuple t in correspondingTuples) {
+                        TupleCounter.Increment();
                         delta.unprojectedRemovedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count * t.count)
                         { fields = tuple.fields, sum = new Number(t.fields[aggregateDimensionIndex]) });
                     }
@@ -75,6 +77,7 @@ namespace AssembleIVM.T_reduct.Nodes {
                     List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[i]);
                     foreach (GMRTuple t in correspondingTuples) {
+                        TupleCounter.Increment();
                         delta.unprojectedAddedTuples.Add(new GMRTuple(t.fields.Length, tuple.count * t.count) 
                         { fields = t.fields, sum = new Number(tuple.fields[aggregateDimensionIndex]) });
                     }
@@ -83,6 +86,7 @@ namespace AssembleIVM.T_reduct.Nodes {
                     List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[i]);
                     foreach (GMRTuple t in correspondingTuples) {
+                        TupleCounter.Increment();
                         delta.unprojectedRemovedTuples.Add(new GMRTuple(t.fields.Length, tuple.count * t.count)
                         { fields = t.fields, sum = new Number(tuple.fields[aggregateDimensionIndex]) });
                     }

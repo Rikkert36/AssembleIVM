@@ -44,13 +44,16 @@ namespace AssembleIVM.T_reduct {
                     } else if (rangeValues[i][0] != null && rangeValues[i][1] != null) {
                         Bound lowerBound = rangeValues[i][0];
                         Bound upperBound = rangeValues[i][1];
+                        TupleCounter.Increment();
                         if (lowerBound.ViolatesTuple(section[section.Count - 1], index.header, orderDimension, true) ||
                             upperBound.ViolatesTuple(section[0], index.header, orderDimension, false)) {
+                            TupleCounter.Increment();
                             continue;
                         }
                         HashSet<int> seenIndices = new HashSet<int>();
                         int j = section.Count / 2;
                         while (true) {
+                            TupleCounter.Increment();
                             if (seenIndices.Contains(j)) {
                                 break;
                             }
@@ -68,11 +71,16 @@ namespace AssembleIVM.T_reduct {
                         }
                     } else if (rangeValues[i][0] != null) { //No upperbound
                         if (!rangeValues[i][0]
-                            .ViolatesTuple(section[section.Count - 1], index.header, orderDimension, true))
+                            .ViolatesTuple(section[section.Count - 1], index.header, orderDimension, true)) {
+                            TupleCounter.Increment();
                             return true;
+                        }
                     } else if (rangeValues[i][1] != null) {
                         if (!rangeValues[i][1]
-                            .ViolatesTuple(section[0], index.header, orderDimension, false)) return true;
+                            .ViolatesTuple(section[0], index.header, orderDimension, false)) {
+                            TupleCounter.Increment();
+                            return true;
+                        }
                     } else {
                         throw new Exception("more than 1 range dimension");
                     }
@@ -92,14 +100,17 @@ namespace AssembleIVM.T_reduct {
                         //Do a binary search and get tuples in range
                         Bound lowerBound = rangeValues[i][0];
                         Bound upperBound = rangeValues[i][1];
+                        TupleCounter.Increment();
                         if (lowerBound.ViolatesTuple(section[section.Count - 1], index.header, orderDimension, true) ||
                             upperBound.ViolatesTuple(section[0], index.header, orderDimension, false)) {
+                            TupleCounter.Increment();
                             continue;
                         }
                         int j = -1;
                         int L = 0;
                         int R = section.Count - 1;
                         while (L <= R) {
+                            TupleCounter.Increment();
                             int m = (L + R) / 2;
                             if (lowerBound.ViolatesTuple(section[m], index.header, orderDimension, true)) {
                                 L = m + 1;
@@ -112,20 +123,24 @@ namespace AssembleIVM.T_reduct {
                         }
                         if (j == -1) continue;
                         for (int k = j; k > -1 && !lowerBound.ViolatesTuple(section[k], index.header, orderDimension, true); k--) {
+                            TupleCounter.Increment();
                             result.Add(section[k]);
                         }
                         for (int l = j + 1; l < section.Count && !upperBound.ViolatesTuple(section[l], index.header, orderDimension, false); l++) {
+                            TupleCounter.Increment();
                             result.Add(section[l]);
                         }
                     } else if (rangeValues[i][0] != null) {
                         //Get all tuples from end to lower bound
                         Bound lowerBound = rangeValues[i][0];
                         for (int j = section.Count - 1; j > -1 && !lowerBound.ViolatesTuple(section[j], index.header, orderDimension, true); j--) {
+                            TupleCounter.Increment();
                             result.Add(section[j]);
                         }
                     } else if (rangeValues[i][1] != null) {
                         Bound upperBound = rangeValues[i][1];
                         for (int j = 0; j < section.Count && !upperBound.ViolatesTuple(section[j], index.header, orderDimension, false); j--) {
+                            TupleCounter.Increment();
                             result.Add(section[j]);
                         }
                     } else {

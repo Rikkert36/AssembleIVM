@@ -19,9 +19,11 @@ namespace AssembleIVM.T_reduct.Nodes {
                 (predicates[o] != null && predicates[o].GetType().Name.Equals("CartesianProduct"))) {
                 if (predicates[i] == null) {
                     foreach (GMRTuple tuple in node.delta.GetAddedTuples()) {
+                        TupleCounter.Increment();
                         delta.unprojectedAddedTuples.Add(tuple);
                     }
                     foreach (GMRTuple tuple in node.delta.GetRemovedTuples()) {
+                        TupleCounter.Increment();
                         delta.unprojectedRemovedTuples.Add(tuple);
                     }
                 }
@@ -30,6 +32,7 @@ namespace AssembleIVM.T_reduct.Nodes {
                     List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[o]);
                     foreach (GMRTuple t in correspondingTuples) {
+                        TupleCounter.Increment();
                         delta.unprojectedAddedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count * t.count) { fields = tuple.fields });
                     }
                 }
@@ -37,6 +40,7 @@ namespace AssembleIVM.T_reduct.Nodes {
                     List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[o]);
                     foreach (GMRTuple t in correspondingTuples) {
+                        TupleCounter.Increment();
                         delta.unprojectedRemovedTuples.Add(new GMRTuple(tuple.fields.Length, tuple.count * t.count) { fields = tuple.fields });
                     }
                 }
@@ -45,6 +49,7 @@ namespace AssembleIVM.T_reduct.Nodes {
                     List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[i]);
                     foreach (GMRTuple t in correspondingTuples) {
+                        TupleCounter.Increment();
                         delta.unprojectedAddedTuples.Add(new GMRTuple(t.fields.Length, tuple.count * t.count) { fields = t.fields });
                     }
                 }
@@ -52,6 +57,7 @@ namespace AssembleIVM.T_reduct.Nodes {
                     List<GMRTuple> correspondingTuples = sibling
                         .SemiJoin(new List<string>(node.variables), tuple, predicates[i]);
                     foreach (GMRTuple t in correspondingTuples) {
+                        TupleCounter.Increment();
                         delta.unprojectedRemovedTuples.Add(new GMRTuple(t.fields.Length, tuple.count * t.count) { fields = t.fields });
                     }
                 }

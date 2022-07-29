@@ -109,6 +109,7 @@ namespace AssembleIVM.T_reduct {
         public GMRTuple FindTuple(GMRTuple tuple, List<GMRTuple> section) {
             if (orderDimension.Equals("")) {
                 foreach (GMRTuple otherTuple in section) {
+                    TupleCounter.Increment();
                     if (otherTuple.Equals(tuple)) return otherTuple;
                 }
             } else {
@@ -118,6 +119,7 @@ namespace AssembleIVM.T_reduct {
                 if (orderDimension.Equals("Week")) {
                     int x = int.Parse(tuple.fields[orderDimensionLocation].Substring(1, 2));
                     while (L <= R) {
+                        TupleCounter.Increment();
                         int m = (L + R) / 2;
                         if (int.Parse(section[m].fields[orderDimensionLocation].Substring(1,2)) < x) {
                             L = m + 1;
@@ -130,6 +132,7 @@ namespace AssembleIVM.T_reduct {
                 } else {
                     int x = int.Parse(tuple.fields[orderDimensionLocation]);
                     while (L <= R) {
+                        TupleCounter.Increment();
                         int m = (L + R) / 2;
                         if (int.Parse(section[m].fields[orderDimensionLocation]) < x) {
                             L = m + 1;
@@ -154,6 +157,7 @@ namespace AssembleIVM.T_reduct {
             if (orderDimension.Equals("Week")) {
                 int x = int.Parse(tuple.fields[orderDimensionLocation].Substring(1, 2));
                 while (L <= R) {
+                    TupleCounter.Increment();
                     int m = (L + R) / 2;
                     if (int.Parse(section[m].fields[orderDimensionLocation].Substring(1, 2)) < x) {
                         L = m + 1;
@@ -166,6 +170,7 @@ namespace AssembleIVM.T_reduct {
             } else {
                 int x = int.Parse(tuple.fields[orderDimensionLocation]);
                 while (L <= R) {
+                    TupleCounter.Increment();
                     int m = (L + R) / 2;
                     if (int.Parse(section[m].fields[orderDimensionLocation]) < x) {
                         L = m + 1;

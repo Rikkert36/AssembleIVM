@@ -23,12 +23,12 @@ namespace AssembleIVM.GJTs {
                 "teamrelationtoDC12",
                 new FrontierEnumerator()
                 );
-            GJTInnerNode root = new GJTQuickMinusNode(
+            GJTInnerNode root = new GJTAntiJoinNode(
                 "root",
                 new List<string> { "a.team", "a.week"},
                 new List<GJTNode> { l1, l2},
                 new List<TreeNode> { null, ParsePredicate("a.team == b.team and a.week == b.week")},
-                new QuickMinusEnumerator()
+                new AntiJoinEnumerator()
                 );
             l1.inFrontier = true;
             l2.inFrontier = true;

@@ -7,12 +7,13 @@ using System.Text;
 namespace AssembleIVM.T_reduct.Enumerators {
     class SumJoinEnumerator : Enumerator {
         public override IEnumerable<List<string>> Enumerate(GMRTuple t) {
-
+            TupleCounter.Increment();
             yield return new List<string>(Utils.Union(t.fields, new string[] { t.sum.value.ToString() }));
 
         }
 
         public override IEnumerable<List<string>> EnumerateAdded(GMRTuple t) {
+            TupleCounter.Increment();
             AggregateJoinNode AN = (AggregateJoinNode)rho;
             List<GMRTuple> section = AN.Get(t);
             GMRTuple tuple = AN.index.FindTuple(t, section);
@@ -23,6 +24,7 @@ namespace AssembleIVM.T_reduct.Enumerators {
         }
 
         public override IEnumerable<List<string>> EnumerateRemoved(GMRTuple t) {
+            TupleCounter.Increment();
             AggregateJoinNode AN = (AggregateJoinNode)rho;
             List<GMRTuple> section = AN.Get(t);
             GMRTuple tuple = AN.index.FindTuple(t, section);

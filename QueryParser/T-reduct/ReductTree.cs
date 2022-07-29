@@ -54,15 +54,22 @@ namespace AssembleIVM.T_reduct {
             LoadIndices(root);
             LoadLeafUpdates(datasetUpdates);
 
+            PrintLeafSize();
+            PrintLeafDeltaSize();
+
+            TupleCounter.Push("Update");
             UpdateTree();
+            TupleCounter.Pop("Update");
 
             if (saveTree) SaveIndices(root);
+            TupleCounter.Push("Enumeration");
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta;
             if (root.delta != null) {
                 delta = EnumerateDelta();
             } else {
                 delta = new Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>>(new HashSet<GMRTuple>(), new HashSet<GMRTuple>());
             }
+            TupleCounter.Pop("Enumeration");
 
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> unionDelta = GetUnionData(datasetUpdates);
             if (delta.Item1.Count > 0 || delta.Item2.Count > 0 ||
@@ -98,7 +105,6 @@ namespace AssembleIVM.T_reduct {
 
             if (saveTree) SaveIndices(root);
 
-
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta = EnumerateFullTree();
 
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> unionDelta = LoadUnionData(datasetUpdates);
@@ -132,11 +138,19 @@ namespace AssembleIVM.T_reduct {
             InitLeafUpdates(datasetUpdates);
             ApplyExtraLeafUpdates(extraUpdates);
 
+            PrintLeafSize();
+            PrintLeafDeltaSize();
+
+            TupleCounter.Push("Update");
             UpdateTreeInitial();
+            TupleCounter.Pop("Update");
+
 
             if (saveTree) SaveIndices(root);
 
+            TupleCounter.Push("Enumeration");
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> delta = EnumerateFullTree();
+            TupleCounter.Pop("Enumeration");
 
             Tuple<HashSet<GMRTuple>, HashSet<GMRTuple>> unionDelta = LoadUnionData(datasetUpdates);
             if (delta.Item1.Count > 0 || delta.Item2.Count > 0 ||
@@ -465,8 +479,12 @@ namespace AssembleIVM.T_reduct {
                 }
                 foreach (NodeReduct node in nodes) {
                     if (node.delta != null) {
+                        TupleCounter.Push("Apply update");
                         node.ApplyUpdate();
+                        TupleCounter.Pop("Apply update");
+                        TupleCounter.Push("ComputeDelta");
                         if (node.delta != null && node != root) node.ComputeParentUpdate();
+                        TupleCounter.Pop("ComputeDelta");
                     }
                 }
             }
@@ -480,8 +498,12 @@ namespace AssembleIVM.T_reduct {
                 }
                 foreach (NodeReduct node in nodes) {
                     if (node.delta != null) {
+                        TupleCounter.Push("Apply update");
                         node.ApplyUpdate();
+                        TupleCounter.Pop("Apply update");
+                        TupleCounter.Push("ComputeDelta");
                         if (node.delta != null && node != root) node.ComputeParentUpdateInitial();
+                        TupleCounter.Pop("ComputeDelta");
                     }
                 }
             }
@@ -501,6 +523,35 @@ namespace AssembleIVM.T_reduct {
             } else {
                 leafs.Add(nodeReduct);
             }
+        }
+
+        private void PrintLeafSize() {
+            TupleCounter.Push("Total leaf size");
+            foreach(LeafReduct leaf in leafs) {
+                TupleCounter.Push($"{leaf.dataset}");
+                foreach (List<GMRTuple> tupleList in leaf.index.tupleMap.Values) {
+                    TupleCounter.Increment(tupleList.Count);
+                }
+                TupleCounter.Pop($"{leaf.dataset}");
+            }
+            TupleCounter.Pop("Total leaf size");
+        }
+
+        private void PrintLeafDeltaSize() {
+            TupleCounter.Push("Total leaf delta size");
+            foreach (LeafReduct leaf in leafs) {
+                if (leaf.delta != null) {
+                    TupleCounter.Push($"{leaf.dataset}");
+                    foreach (List<GMRTuple> tupleList in leaf.delta.projectedAddedTuples.tupleMap.Values) {
+                        TupleCounter.Increment(tupleList.Count);
+                    }
+                    foreach (List<GMRTuple> tupleList in leaf.delta.projectedRemovedTuples.tupleMap.Values) {
+                        TupleCounter.Increment(tupleList.Count);
+                    }
+                    TupleCounter.Pop($"{leaf.dataset}");
+                }
+            }
+            TupleCounter.Pop("Total leaf delta size");
         }
 
         private void InitIndices(NodeReduct nodeReduct) {
