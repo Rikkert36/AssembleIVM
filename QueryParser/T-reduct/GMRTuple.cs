@@ -29,6 +29,14 @@ namespace AssembleIVM {
             return result;
         }
 
+        public GMRTuple Clone() {
+            return new GMRTuple(fields.Length, count) {
+                fields = fields.Select(s => s).ToArray(),
+                sum = sum == null ? null : new Number(sum.value),
+                isPlusTuple = isPlusTuple
+            };
+        }
+
 
 
         public bool Equals(GMRTuple t) {

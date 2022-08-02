@@ -22,6 +22,17 @@ namespace AssembleIVM.T_reduct {
             projectedRemovedTuples = node.index.CopyWithoutData();
         }
 
+        public Update Clone() {
+            Update result = new Update(projectedAddedTuples.header, projectedAddedTuples.eqJoinHeader);
+            foreach(GMRTuple tuple in GetAddedTuples()) {
+                result.AddAddedTuple(tuple.Clone());
+            }
+            foreach(GMRTuple tuple in GetRemovedTuples()) {
+                result.AddRemovedTuple(tuple.Clone());
+            }
+            return result;     
+        }
+
         public Update(List<string> header, List<string> eqJoinHeader) {
             unprojectedAddedTuples = new List<GMRTuple>();
             unprojectedRemovedTuples = new List<GMRTuple>();
